@@ -1,0 +1,20 @@
+import { Container } from "@material-ui/core";
+import Dashboard from "pages/DashBoard/DashBoard";
+import React from "react";
+import { Switch, Route } from "react-router-dom";
+import NotFoundPage from "../../../components/NotFoundPage";
+
+const AdminLayout = () => {
+  return (
+    <>
+      <div>
+        <Switch>
+          <Route path="/admin/dashBoard" component={Dashboard} />
+          <Route component={NotFoundPage} />
+        </Switch>
+      </div>
+    </>
+  );
+};
+
+export default AdminLayout;
