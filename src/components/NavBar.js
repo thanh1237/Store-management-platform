@@ -13,6 +13,10 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import authActions from "redux/actions/auth.actions";
+import { Modal } from "@material-ui/core";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
+import ChangePassForm from "pages/LoginRegister/component/ChangePassForm";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -82,11 +86,13 @@ export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [open, setOpen] = React.useState(false);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -111,6 +117,15 @@ export default function PrimarySearchAppBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    handleMenuClose();
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -122,7 +137,23 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Change Password</MenuItem>
+      <MenuItem onClick={handleOpen}>Change Password</MenuItem>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <ChangePassForm handleOpen={handleOpen} handleClose={handleClose} />
+        </Fade>
+      </Modal>
       <MenuItem onClick={handleLogout}>LogOut</MenuItem>
     </Menu>
   );

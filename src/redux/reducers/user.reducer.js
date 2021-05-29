@@ -29,6 +29,13 @@ const userReducer = (state = initialState, action) => {
     case types.DELETE_USER_FAILURE:
       return { ...state, loading: false };
 
+    case types.CHANGE_PASS_REQUEST:
+      return { ...state, loading: true };
+    case types.CHANGE_PASS_SUCCESS:
+      return { ...state, loading: false };
+    case types.CHANGE_PASS_FAILURE:
+      return { ...state, loading: false };
+
     default:
       return state;
   }

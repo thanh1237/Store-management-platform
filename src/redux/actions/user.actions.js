@@ -29,8 +29,22 @@ const deleteUser = (id) => async (dispatch) => {
     dispatch({ type: types.DELETE_USER_FAILURE, payload: error });
   }
 };
+const changePass = (form, id) => async (dispatch) => {
+  dispatch({ type: types.CHANGE_PASS_REQUEST, payload: null });
+  try {
+    console.log("form", form);
+    const res = await api.put(`/users/${id}`, form);
+    dispatch({ type: types.CHANGE_PASS_SUCCESS, payload: res.data.data });
+    toast.success("Change Password Success");
+    dispatch(getUsers());
+  } catch (error) {
+    toast.error("Change Password Fail");
+    dispatch({ type: types.CHANGE_PASS_FAILURE, payload: error });
+  }
+};
 
 export const userActions = {
   getUsers,
   deleteUser,
+  changePass,
 };

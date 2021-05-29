@@ -75,7 +75,7 @@ function App() {
         {/* <NavBar /> */}
         <AlertMsg />
         <Switch>
-          <PrivateRoute exact path="/user" component={UserLayout} />
+          <PrivateRoute path="/user" component={UserLayout} />
           <AdminRoute path="/admin" component={AdminLayout} />
           <Route path="/" component={PublicLayout} />
         </Switch>
