@@ -74,6 +74,8 @@ export default function CreateUpdateFrom(props) {
         unit: "",
       },
     ],
+    quantity: "",
+    stock: "",
   });
 
   function handleChangeInputs(i, event) {
@@ -149,6 +151,8 @@ export default function CreateUpdateFrom(props) {
           unit: "",
         },
       ],
+      quantity: "",
+      stock: "",
     });
   };
   useEffect(() => {
@@ -160,6 +164,8 @@ export default function CreateUpdateFrom(props) {
         cost: singleProduct.cost,
         price: singleProduct.price,
         ingredients: singleProduct.ingredients,
+        quantity: singleProduct.quantity,
+        stock: singleProduct.stock,
       });
       setFields(singleProduct?.ingredients);
     }
@@ -170,7 +176,10 @@ export default function CreateUpdateFrom(props) {
       setForm({ ...form, unit: "glass" });
     }
     if (form.type && form.type === "Beer") {
-      setForm({ ...form, unit: "bth" });
+      setForm({ ...form, unit: "btl" });
+    }
+    if (form.type && form.type === "Alcolol") {
+      setForm({ ...form, unit: "btl" });
     }
   }, [dispatch, form.type, singleProduct]);
   return (
@@ -203,6 +212,7 @@ export default function CreateUpdateFrom(props) {
                   name="type"
                 >
                   <MenuItem value={"Beer"}>Beer</MenuItem>
+                  <MenuItem value={"Alcohol"}>Alcohol</MenuItem>
                   <MenuItem value={"Cocktail"}>Cocktail</MenuItem>
                   <MenuItem value={"Mocktail"}>Mocktail</MenuItem>
                 </Select>
@@ -270,7 +280,10 @@ export default function CreateUpdateFrom(props) {
               item
               xs={12}
               style={{
-                display: form.type === "Beer" || !form.type ? "none" : null,
+                display:
+                  form.type === "Beer" || form.type === "Alcohol" || !form.type
+                    ? "none"
+                    : null,
               }}
             >
               <div
@@ -294,7 +307,12 @@ export default function CreateUpdateFrom(props) {
                   alignItems="center"
                   xs={12}
                   style={{
-                    display: form.type === "Beer" || !form.type ? "none" : null,
+                    display:
+                      form.type === "Beer" ||
+                      form.type === "Alcohol" ||
+                      !form.type
+                        ? "none"
+                        : null,
                     marginBottom: "10px",
                   }}
                 >
@@ -351,7 +369,10 @@ export default function CreateUpdateFrom(props) {
               item
               xs={12}
               style={{
-                display: form.type === "Beer" || !form.type ? "none" : "flex",
+                display:
+                  form.type === "Beer" || form.type === "Alcohol" || !form.type
+                    ? "none"
+                    : "flex",
                 justifyContent: "center",
               }}
             >
@@ -369,6 +390,63 @@ export default function CreateUpdateFrom(props) {
               >
                 <RemoveCircleOutlineOutlinedIcon />
               </Button>
+            </Grid>
+            {/* TODO */}
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              style={{
+                display:
+                  form.type === "Cocktail" ||
+                  !form.type ||
+                  form.type === "Mocktail"
+                    ? "none"
+                    : null,
+                marginBottom: "10px",
+              }}
+            >
+              <TextField
+                id="filled-number"
+                name="quantity"
+                label="Daily Quantity Needed"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+                onChange={handleChange}
+                fullWidth
+                value={form.quantity}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              style={{
+                display:
+                  form.type === "Cocktail" ||
+                  !form.type ||
+                  form.type === "Mocktail"
+                    ? "none"
+                    : null,
+                marginBottom: "10px",
+              }}
+            >
+              <TextField
+                id="filled-number"
+                name="stock"
+                label="Stock"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+                onChange={handleChange}
+                fullWidth
+                value={form.stock}
+              />
             </Grid>
           </Grid>
           <Button

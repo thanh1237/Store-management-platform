@@ -25,10 +25,18 @@ const getSingleProduct = (id) => async (dispatch) => {
   }
 };
 const createProducts =
-  ({ type, unit, name, cost, price, ingredients }) =>
+  ({ type, unit, name, cost, price, ingredients, quantity, stock }) =>
   async (dispatch) => {
-    const body = { type, unit, name, cost, price, ingredients };
-    console.log("body", body);
+    const body = {
+      type,
+      unit,
+      name,
+      cost,
+      price,
+      ingredients,
+      quantity,
+      stock,
+    };
     dispatch({ type: types.CREATE_PRODUCTS_REQUEST, payload: null });
     try {
       const res = await api.post("/products", body);

@@ -32,7 +32,6 @@ const deleteUser = (id) => async (dispatch) => {
 const changePass = (form, id) => async (dispatch) => {
   dispatch({ type: types.CHANGE_PASS_REQUEST, payload: null });
   try {
-    console.log("form", form);
     const res = await api.put(`/users/${id}`, form);
     dispatch({ type: types.CHANGE_PASS_SUCCESS, payload: res.data.data });
     toast.success("Change Password Success");
