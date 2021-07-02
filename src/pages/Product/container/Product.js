@@ -20,7 +20,6 @@ import ProductModal from "pages/Product/container/ProductModal";
 import { Backdrop, Button, Fade, Modal } from "@material-ui/core";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import CreateUpdateFrom from "pages/Product/components/CreateUpdateFrom";
-import { useState } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({

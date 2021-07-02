@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import authActions from "redux/actions/auth.actions";
 import { Redirect, useHistory } from "react-router";
 import { routeActions } from "redux/actions";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 function Copyright() {
   return (
@@ -58,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
   },
 }));
 
@@ -108,7 +113,6 @@ export default function SignInSide() {
   if (role === "Admin") return <Redirect to="/admin/dashBoard" />;
   if (isAuthenticated && role !== "admin")
     return <Redirect to="/user/dashBoard" />;
-
   return (
     <>
       <Grid container component="main" className={classes.root}>
@@ -157,8 +161,15 @@ export default function SignInSide() {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
+                disabled={loading}
               >
-                Sign In
+                {loading ? (
+                  <div className={classes.loading}>
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
               <Box mt={5}>
                 <Copyright />
