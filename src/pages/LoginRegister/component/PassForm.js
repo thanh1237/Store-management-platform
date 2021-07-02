@@ -76,12 +76,13 @@ export default function PassForm(props) {
   const handleChangePass = (e) => {
     e.preventDefault();
     let password = form.password;
-    const newPassword = form.newPassword;
-    const secondNewPassword = form.secondNewPassword;
+    const newPassword = newForm.newPassword;
+    const secondNewPassword = newForm.secondNewPassword;
     if (
       currentUser.email === form.email &&
       currentUser.password === password &&
-      newPassword === secondNewPassword
+      newPassword === secondNewPassword &&
+      newPassword !== password
     ) {
       password = newForm.newPassword;
       dispatch(
@@ -102,6 +103,8 @@ export default function PassForm(props) {
       toast.error("Incorrect password");
     } else if (newPassword !== secondNewPassword) {
       toast.error("New passwords must be the same");
+    } else if (password === newPassword) {
+      toast.error("The new password must be different from the old password");
     }
   };
 

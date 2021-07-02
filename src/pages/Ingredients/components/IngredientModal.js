@@ -4,10 +4,9 @@ import Dialog from "@material-ui/core/Dialog";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { Button } from "@material-ui/core";
-import CreateUpdateFrom from "../components/CreateUpdateFrom";
+import CreateUpdateIngredient from "../components/CreateUpdateIngredient";
 import { productActions } from "redux/actions";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -23,12 +22,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProductModal({ listProducts }) {
+export default function IngredientModal({ listProducts }) {
   const classes = useStyles();
-  const [totalArr, setTotalArr] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
-
   const handleOpen = () => {
     setOpen(true);
   };
@@ -36,7 +33,6 @@ export default function ProductModal({ listProducts }) {
   const handleClose = () => {
     setOpen(false);
     dispatch(productActions.getProducts());
-    setTotalArr([]);
   };
 
   return (
@@ -62,9 +58,7 @@ export default function ProductModal({ listProducts }) {
         }}
       >
         <Fade in={open}>
-          <CreateUpdateFrom
-            totalArr={totalArr}
-            setTotalArr={setTotalArr}
+          <CreateUpdateIngredient
             handleOpen={handleOpen}
             handleClose={handleClose}
             listProducts={listProducts}

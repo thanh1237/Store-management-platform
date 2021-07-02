@@ -51,14 +51,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CreateUpdateFrom(props) {
-  const { totalArr, handleClose, singleProduct, listProducts, setTotalArr } =
-    props;
+export default function CreateUpdateIngredient(props) {
+  const { handleClose, singleProduct, listProducts } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [count, setCount] = useState(0);
-  const [totalCost, setTotalCost] = useState(0);
-  const [object, setObject] = useState();
+  const products = listProducts?.map((e) => e);
   const [fields, setFields] = useState([
     {
       ingredient: "",
@@ -70,6 +67,7 @@ export default function CreateUpdateFrom(props) {
     type: "",
     unit: "",
     name: "",
+    capacity: "",
     cost: "",
     price: "",
     ingredients: [
@@ -82,26 +80,22 @@ export default function CreateUpdateFrom(props) {
     quantity: "",
     stock: "",
   });
-  let costArr = [];
+
   function handleChangeInputs(i, event, val) {
     let values = [...fields];
+    if (!singleProduct) {
+    }
+    if (val) {
+      values[i].ingredient = val.name;
+    }
     if (event.target.name === "consumption") {
       values[i].consumption = event.target.value;
     }
     if (event.target.name === "unit") {
       values[i].unit = event.target.value;
     }
-    setForm({ ...form, ingredients: fields });
-    let consumptionArr = values.map((e) => e.consumption);
-    let cost = consumptionArr.map((e, idx) => {
-      return (e = Number(
-        Math.ceil(values[idx].cost / values[idx]?.capacity) * Number(e)
-      ));
-    });
-    costArr.push(cost);
-    let final = cost?.reduce((a, b) => a + b, 0);
     setFields(values);
-    setForm({ ...form, cost: final });
+    setForm({ ...form, ingredients: fields });
   }
 
   function handleAdd() {
@@ -112,14 +106,12 @@ export default function CreateUpdateFrom(props) {
       unit: "",
     });
     setFields(values);
-    setCount(count + 1);
   }
 
   function handleRemove() {
     const values = [...fields];
     values.splice(values.length - 1, 1);
     setFields(values);
-    setCount(count - 1);
   }
 
   const handleChangeType = (event) => {
@@ -130,18 +122,37 @@ export default function CreateUpdateFrom(props) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const getDefaultValue = (idx) => {
+    products.find((e) => {
+      return e.name === fields[idx].ingredient;
+    });
+  };
+
   const handleCreateOrUpdateProduct = (e) => {
     e.preventDefault();
     if (!singleProduct) {
-      dispatch(productActions.createProducts({ ...form, ingredients: fields }));
+      if (
+        form.ingredients ===
+        [
+          {
+            ingredient: "",
+            consumption: 0,
+            unit: "",
+          },
+        ]
+      ) {
+        setForm({ ...form, ingredients: [] });
+      }
+      dispatch(productActions.createProducts({ ...form }));
     } else if (singleProduct) {
       dispatch(productActions.updateProduct(singleProduct._id, form));
     }
-    handleClose();
+    dispatch(productActions.getProducts());
     setForm({
       type: "",
       unit: "",
       name: "",
+      capacity: "",
       price: "",
       ingredients: [
         {
@@ -153,40 +164,7 @@ export default function CreateUpdateFrom(props) {
       quantity: "",
       stock: "",
     });
-  };
-
-  const nonCocktailList = listProducts?.filter((e) => {
-    return e.type !== "Cocktail";
-  });
-
-  const nonMocktailList = nonCocktailList?.filter((e) => {
-    return e.type !== "Mocktail";
-  });
-
-  const defaultProps = {
-    options: nonMocktailList,
-    getOptionLabel: (option) => option.name,
-  };
-  const handleChangeAuto = (event, newValue, idx) => {
-    let values = [...fields];
-    setObject(newValue);
-    values[idx].ingredient = newValue?.name;
-    values[idx].unit = newValue?.unit;
-    values.forEach((ob, i) => {
-      ob.index = i;
-      if (i === values[idx].index) {
-        ob.cost = newValue?.cost;
-        ob.capacity = newValue?.capacity;
-      }
-    });
-    const totalArr = [...values];
-    for (var i = 0; i < totalArr.length; i++) {
-      if (totalArr[i]._id === newValue?._id) {
-        totalArr.splice(i, 1);
-      }
-    }
-    costArr = totalArr.map((e) => e.cost);
-    setFields(values);
+    handleClose();
   };
 
   useEffect(() => {
@@ -216,15 +194,13 @@ export default function CreateUpdateFrom(props) {
     if (form.type && form.type === "Alcohol") {
       setForm({ ...form, unit: "btl" });
     }
-  }, [
-    dispatch,
-    form.type,
-    form.cost,
-    singleProduct,
-    fields.consumption,
-    totalCost,
-    totalArr,
-  ]);
+    if (singleProduct && form.type && form.type === "Ingredient") {
+      setForm({ ...form, unit: singleProduct.unit });
+    }
+    if (!singleProduct && form.type && form.type === "Ingredient") {
+      setForm({ ...form, unit: "" });
+    }
+  }, [dispatch, form.type, singleProduct]);
   return (
     <Container component="main" maxWidth="sm">
       <CssBaseline />
@@ -233,7 +209,7 @@ export default function CreateUpdateFrom(props) {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          {singleProduct ? "Update Product" : "Create New Product"}
+          {singleProduct ? "Update Ingredient" : "Create New Ingredient"}
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -255,8 +231,8 @@ export default function CreateUpdateFrom(props) {
                   name="type"
                 >
                   <MenuItem value={"Beer"}>Beer</MenuItem>
-                  <MenuItem value={"Cocktail"}>Cocktail</MenuItem>
-                  <MenuItem value={"Mocktail"}>Mocktail</MenuItem>
+                  <MenuItem value={"Alcohol"}>Alcohol</MenuItem>
+                  <MenuItem value={"Ingredient"}>Ingredient</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -270,7 +246,7 @@ export default function CreateUpdateFrom(props) {
                 name="unit"
                 onChange={handleChange}
                 value={form.unit}
-                disabled
+                disabled={form.type !== "Ingredient"}
               />
             </Grid>
             <Grid item xs={12}>
@@ -288,7 +264,6 @@ export default function CreateUpdateFrom(props) {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                disabled={form.type === "Cocktail" || form.type === "Mocktail"}
                 autoComplete="cost"
                 variant="outlined"
                 id="filled-number"
@@ -303,7 +278,44 @@ export default function CreateUpdateFrom(props) {
                 value={form.cost}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+              style={{
+                display:
+                  form.type === "Mocktail" || form.type === "Cocktail"
+                    ? "none"
+                    : null,
+              }}
+            >
+              <TextField
+                autoComplete="capacity"
+                variant="outlined"
+                id="filled-number"
+                name="capacity"
+                label="Unit Capacity"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={handleChange}
+                fullWidth
+                value={form.capacity}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              style={{
+                display:
+                  form.type === "Beer" ||
+                  form.type === "Alcohol" ||
+                  form.type === "Ingredient" ||
+                  !form.type
+                    ? "none"
+                    : null,
+              }}
+            >
               <TextField
                 id="filled-number"
                 name="price"
@@ -323,7 +335,10 @@ export default function CreateUpdateFrom(props) {
               xs={12}
               style={{
                 display:
-                  form.type === "Beer" || form.type === "Alcohol" || !form.type
+                  form.type === "Beer" ||
+                  form.type === "Alcohol" ||
+                  form.type === "Ingredient" ||
+                  !form.type
                     ? "none"
                     : null,
               }}
@@ -353,6 +368,7 @@ export default function CreateUpdateFrom(props) {
                     display:
                       form.type === "Beer" ||
                       form.type === "Alcohol" ||
+                      form.type === "Ingredient" ||
                       !form.type
                         ? "none"
                         : null,
@@ -361,23 +377,23 @@ export default function CreateUpdateFrom(props) {
                 >
                   <Grid item xs={4}>
                     <Autocomplete
-                      {...defaultProps}
                       id="combo-box-demo"
-                      getOptionLabel={(option) =>
-                        option.name ? option.name : ""
+                      options={products}
+                      value={getDefaultValue(idx)}
+                      getOptionLabel={(option) => option.name}
+                      name="ingredient"
+                      onChange={(event, value) =>
+                        handleChangeInputs(idx, event, value)
                       }
-                      onChange={(event, newValue) => {
-                        handleChangeAuto(event, newValue, idx);
-                      }}
-                      value={{ name: fields[idx]?.ingredient }}
-                      getOptionSelected={(option) => {
-                        return option.name === fields[idx]?.ingredient;
-                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Ingredient"
+                          key={`${idx}` + 1 + `${field}`}
                           variant="outlined"
+                          label="Ingredient"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
                         />
                       )}
                     />
@@ -400,7 +416,6 @@ export default function CreateUpdateFrom(props) {
                   </Grid>
                   <Grid item xs={4}>
                     <TextField
-                      disabled
                       key={`${idx}`}
                       autoComplete="unit"
                       variant="outlined"
@@ -422,7 +437,10 @@ export default function CreateUpdateFrom(props) {
               xs={12}
               style={{
                 display:
-                  form.type === "Beer" || form.type === "Alcohol" || !form.type
+                  form.type === "Beer" ||
+                  form.type === "Alcohol" ||
+                  form.type === "Ingredient" ||
+                  !form.type
                     ? "none"
                     : "flex",
                 justifyContent: "center",
@@ -450,8 +468,8 @@ export default function CreateUpdateFrom(props) {
               style={{
                 display:
                   form.type === "Cocktail" ||
-                  !form.type ||
-                  form.type === "Mocktail"
+                  form.type === "Mocktail" ||
+                  !form.type
                     ? "none"
                     : null,
                 marginBottom: "10px",

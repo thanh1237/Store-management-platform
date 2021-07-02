@@ -25,13 +25,14 @@ const getSingleProduct = (id) => async (dispatch) => {
   }
 };
 const createProducts =
-  ({ type, unit, name, cost, price, ingredients, quantity, stock }) =>
+  ({ type, unit, name, cost, capacity, price, ingredients, quantity, stock }) =>
   async (dispatch) => {
     const body = {
       type,
       unit,
       name,
       cost,
+      capacity,
       price,
       ingredients,
       quantity,
@@ -41,6 +42,7 @@ const createProducts =
     try {
       const res = await api.post("/products", body);
       dispatch({ type: types.CREATE_PRODUCTS_SUCCESS, payload: res.data.data });
+      dispatch(getProducts());
       toast.success("Create Product Success");
     } catch (error) {
       toast.error("Create Product Failed");

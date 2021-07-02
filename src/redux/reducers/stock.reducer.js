@@ -32,6 +32,16 @@ const stockReducer = (state = initialState, action) => {
     case types.CREATE_STOCK_FAILURE:
       return { ...state, loading: false };
 
+    case types.UPDATE_STOCK_REQUEST:
+      return { ...state, loading: true };
+    case types.UPDATE_STOCK_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case types.UPDATE_STOCK_FAILURE:
+      return { ...state, loading: false };
+
     default:
       return state;
   }

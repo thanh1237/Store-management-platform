@@ -107,7 +107,7 @@ export default function SignInSide() {
 
   if (role === "Admin") return <Redirect to="/admin/dashBoard" />;
   if (isAuthenticated && role !== "admin")
-    return <Redirect to="/user/orders" />;
+    return <Redirect to="/user/dashBoard" />;
 
   return (
     <>

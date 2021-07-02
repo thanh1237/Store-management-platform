@@ -1,0 +1,21 @@
+.order-container {
+  height: 100%;
+}
+.order {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.order-button {
+  margin-top: 10px;
+  width: 30%;
+  background-color: #2ec0ff;
+  color: white;
+}

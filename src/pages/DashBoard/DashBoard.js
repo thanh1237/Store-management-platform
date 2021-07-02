@@ -19,7 +19,6 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { secondaryListItems } from "./listItems";
 import Chart from "./Chart";
 import Deposits from "./Deposits";
-import Orders from "./Orders";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -31,10 +30,15 @@ import LayersIcon from "@material-ui/icons/Layers";
 import AccountIndex from "pages/Account/AccountIndex";
 import { useDispatch, useSelector } from "react-redux";
 import { AccountCircle } from "@material-ui/icons";
-import { Menu, MenuItem } from "@material-ui/core";
+import { Backdrop, Fade, Menu, MenuItem, Modal } from "@material-ui/core";
 import authActions from "redux/actions/auth.actions";
 import { useHistory } from "react-router";
 import { ProdIndex } from "pages/Product/ProdIndex";
+import OrderIndex from "pages/Orders/OrderIndex";
+import ChangePassForm from "pages/LoginRegister/component/ChangePassForm";
+import OrderList from "pages/OrderList/container/OrderList";
+import IngredientsIndex from "pages/Ingredients/IngredientsIndex";
+import RestaurantMenuOutlinedIcon from "@material-ui/icons/RestaurantMenuOutlined";
 
 function Copyright() {
   return (
@@ -128,17 +132,24 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 }));
 
 export default function Dashboard() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
   const [show, setShow] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const currentUserRole = useSelector((state) => state.auth.user.role);
   const isMenuOpen = Boolean(anchorEl);
   const menuId = "primary-search-account-menu";
 
@@ -161,8 +172,12 @@ export default function Dashboard() {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+  const handleOpen = () => {
+    setOpenModal(true);
+  };
+
+  const handleClose = () => {
+    setOpenModal(false);
   };
 
   const handleDrawerOpen = () => {
@@ -175,7 +190,6 @@ export default function Dashboard() {
 
   const handleShow = (text) => {
     setShow(text);
-    console.log(show);
   };
 
   const renderMenu = (
@@ -188,7 +202,7 @@ export default function Dashboard() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Change Password</MenuItem>
+      <MenuItem onClick={handleOpen}>Change Password</MenuItem>
       <MenuItem onClick={handleLogout}>LogOut</MenuItem>
     </Menu>
   );
@@ -231,6 +245,25 @@ export default function Dashboard() {
               color="inherit"
             >
               <AccountCircle />
+              <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={openModal}
+                onClose={handleClose}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                  timeout: 500,
+                }}
+              >
+                <Fade in={open}>
+                  <ChangePassForm
+                    handleOpen={handleOpen}
+                    handleClose={handleClose}
+                  />
+                </Fade>
+              </Modal>
             </IconButton>
           ) : null}
         </Toolbar>
@@ -259,6 +292,7 @@ export default function Dashboard() {
                 {/* <ListItemText primary="Dashboard" /> */}
               </ListItem>
               <ListItem
+                style={{ display: currentUserRole === "Admin" ? "none" : null }}
                 button
                 onClick={() => {
                   handleShow("Orders");
@@ -267,9 +301,10 @@ export default function Dashboard() {
                 <ListItemIcon>
                   <ShoppingCartIcon />
                 </ListItemIcon>
-                <ListItemText primary="Orders" />
+                <ListItemText primary="Daily Order" />
               </ListItem>
               <ListItem
+                style={{ display: currentUserRole !== "Admin" ? "none" : null }}
                 button
                 onClick={() => {
                   handleShow("Accounts");
@@ -281,6 +316,7 @@ export default function Dashboard() {
                 <ListItemText primary="Accounts" />
               </ListItem>
               <ListItem
+                style={{ display: currentUserRole !== "Admin" ? "none" : null }}
                 button
                 onClick={() => {
                   handleShow("Products");
@@ -291,11 +327,29 @@ export default function Dashboard() {
                 </ListItemIcon>
                 <ListItemText primary="Products" />
               </ListItem>
-              <ListItem button>
+              <ListItem
+                button
+                style={{ display: currentUserRole !== "Admin" ? "none" : null }}
+                onClick={() => {
+                  handleShow("orderList");
+                }}
+              >
                 <ListItemIcon>
                   <LayersIcon />
                 </ListItemIcon>
-                <ListItemText primary="Integrations" />
+                <ListItemText primary="Order List" />
+              </ListItem>
+              <ListItem
+                style={{ display: currentUserRole !== "Admin" ? "none" : null }}
+                button
+                onClick={() => {
+                  handleShow("Ingredients");
+                }}
+              >
+                <ListItemIcon>
+                  <RestaurantMenuOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Ingredients" />
               </ListItem>
             </div>
           }
@@ -323,6 +377,12 @@ export default function Dashboard() {
               <h1 style={{ color: "#2EC0FF" }}>Account Management</h1>
             ) : show === "Products" ? (
               <h1 style={{ color: "#2EC0FF" }}>Product Management</h1>
+            ) : show === "Orders" ? (
+              <h1 style={{ color: "#2EC0FF" }}>Daily Stock</h1>
+            ) : show === "orderList" ? (
+              <h1 style={{ color: "#2EC0FF" }}>Stock List</h1>
+            ) : show === "Ingredients" ? (
+              <h1 style={{ color: "#2EC0FF" }}>Ingredients Management</h1>
             ) : null}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -330,8 +390,14 @@ export default function Dashboard() {
                   <AccountIndex />
                 ) : show === "Products" ? (
                   <ProdIndex />
+                ) : show === "Orders" ? (
+                  <OrderIndex />
+                ) : show === "orderList" ? (
+                  <OrderList />
+                ) : show === "Ingredients" ? (
+                  <IngredientsIndex />
                 ) : (
-                  <Orders />
+                  "Please select from side menu"
                 )}
               </Paper>
             </Grid>

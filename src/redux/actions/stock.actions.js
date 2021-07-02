@@ -13,40 +13,28 @@ const getStocks = () => async (dispatch) => {
   }
 };
 
-const createStock =
-  ({
-    author,
-    estimate,
-    note,
-    order,
-    product,
-    real,
-    start,
-    stockIn,
-    stockOut,
-  }) =>
-  async (dispatch) => {
-    dispatch({ type: types.CREATE_STOCK_REQUEST, payload: null });
-    try {
-      const body = {
-        productId: product,
-        order,
-        userId: author,
-        start,
-        stockIn,
-        stockOut,
-        estimate,
-        real,
-        note,
-      };
-      const res = await api.post("/stocks", body);
-      dispatch({ type: types.CREATE_STOCK_SUCCESS, payload: res.data.data });
-    } catch (error) {
-      dispatch({ type: types.CREATE_STOCK_FAILURE, payload: error });
-    }
-  };
+const createStock = (body) => async (dispatch) => {
+  dispatch({ type: types.CREATE_STOCK_REQUEST, payload: null });
+  try {
+    const res = await api.post("/stocks", body);
+    dispatch({ type: types.CREATE_STOCK_SUCCESS, payload: res.data.data });
+  } catch (error) {
+    dispatch({ type: types.CREATE_STOCK_FAILURE, payload: error });
+  }
+};
+
+const updateStock = (body) => async (dispatch) => {
+  dispatch({ type: types.UPDATE_STOCK_REQUEST, payload: null });
+  try {
+    const res = await api.put(`/stocks`, body);
+    dispatch({ type: types.UPDATE_STOCK_SUCCESS, payload: res.data.data });
+  } catch (error) {
+    dispatch({ type: types.UPDATE_STOCK_FAILURE, payload: error });
+  }
+};
 
 export const stockActions = {
   getStocks,
   createStock,
+  updateStock,
 };

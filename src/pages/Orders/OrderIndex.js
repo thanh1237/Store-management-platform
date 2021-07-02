@@ -1,9 +1,10 @@
 import Order from "pages/Orders/container/Order";
 import React from "react";
+import "./styles.css";
 
 export const OrderIndex = () => {
   return (
-    <div>
+    <div className="order-container">
       <Order />
     </div>
   );

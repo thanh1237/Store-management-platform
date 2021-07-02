@@ -3,43 +3,81 @@ import { DataGrid } from "@material-ui/data-grid";
 import { useEffect } from "react";
 import { productActions, stockActions, orderActions } from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, TextField } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import moment from "moment";
-import { useRef } from "react";
-import { useMemo } from "react";
-import { useState } from "react";
+import { toast } from "react-toastify";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export default function ValueGetterGrid() {
   const dispatch = useDispatch();
   const currentUserId = useSelector((state) => state.auth.user._id);
   const listStock = useSelector((state) => state.stock.stocks.stocks);
   const listOrder = useSelector((state) => state.order.orders.orders);
-  const newestStockList = listStock?.filter((stock) => {
-    let createdDate = stock.createdDate;
-    if (moment(createdDate).format("L") === moment().format("L")) {
-      return moment(createdDate).format("L") === moment().format("L");
-    } else {
-      return (
-        moment(createdDate).format("L") ===
-        moment().subtract(1, "days").format("L")
-      );
-    }
-  });
-  const stockByUser = newestStockList?.filter((stock) => {
+  const loading = useSelector((state) => state.stock.loading);
+  let defaultRows = [];
+  let bottle;
+  let nearestDate;
+  const stockByUser = listStock?.filter((stock) => {
     return stock.author === currentUserId;
   });
-  let defaultRows = stockByUser?.map((row, idx) => {
-    return {
-      id: `${idx + 1}`,
-      name: row.product.name,
-      start: row.real,
-      stockIn: 0,
-      stockOut: 0,
-      estimate: row.estimate,
-      real: 0,
-      note: "",
-    };
+
+  const datesToBeChecked = stockByUser?.map((stock) =>
+    moment(stock.createdAt).format("YYYY-MM-DD")
+  );
+  const newestStockList = stockByUser?.filter((stock) => {
+    let createdDate = stock.createdAt;
+    const dateToCheckFor = moment().format("YYYY-MM-DD");
+    datesToBeChecked.forEach((date) => {
+      let diff = moment(date).diff(moment(dateToCheckFor), "days");
+      if (diff === 0) {
+        nearestDate = moment().format("YYYY-MM-DD");
+      } else {
+        if (!nearestDate) {
+          if (moment(date).diff(moment(nearestDate), "days") < 0) {
+            nearestDate = date;
+          }
+        }
+      }
+    });
+    return moment(createdDate).format("YYYY-MM-DD") === nearestDate;
   });
+
+  if (nearestDate === moment().format("YYYY-MM-DD")) {
+    bottle = [];
+  } else {
+    bottle = newestStockList?.filter(
+      (e) =>
+        e.product?.type === "Alcohol" ||
+        e.product?.type === "Beer" ||
+        e.product?.type === "Ingredient"
+    );
+  }
+
+  if (bottle) {
+    defaultRows = bottle?.map((row, idx) => {
+      return {
+        id: `${idx + 1}`,
+        name: row.product?.name,
+        start: row?.real,
+        stockIn: 0,
+        stockOut: 0,
+        estimate: 0,
+        real: 0,
+        note: "",
+      };
+    });
+  } else {
+    defaultRows = [];
+  }
+
+  const getEstimate = (params) => {
+    const estimate =
+      Number(params.getValue(params.id, "start")) +
+      Number(params.getValue(params.id, "stockIn")) -
+      Number(params.getValue(params.id, "stockOut"));
+    return estimate;
+  };
+
   const updateRows = (value, id, field) => {
     const item = defaultRows.find((item) => item.id === id);
     item[field] = value;
@@ -48,7 +86,7 @@ export default function ValueGetterGrid() {
     {
       field: "name",
       headerName: "Product Name",
-      width: 130,
+      width: 200,
     },
     {
       field: "start",
@@ -73,11 +111,16 @@ export default function ValueGetterGrid() {
         updateRows(params.value, params.row.id, params.field);
       },
     },
-    { field: "estimate", headerName: "Estimate", width: 130 },
+    {
+      field: "estimate",
+      headerName: "Estimate",
+      width: 130,
+      valueGetter: getEstimate,
+    },
     {
       field: "real",
       headerName: "Real Stock",
-      width: 130,
+      width: 200,
       editable: true,
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -86,53 +129,64 @@ export default function ValueGetterGrid() {
     {
       field: "note",
       headerName: "Note",
-      width: 130,
+      width: 300,
       editable: true,
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
     },
   ];
-
   const handleClickButton = () => {
-    const orderIdArr = listOrder?.map((e) => e._id);
-    const authorIdArr = listOrder?.map((e) => e.author._id);
-    const productIdArr = stockByUser?.map((e) => e.product._id);
+    const orderIdArr = listOrder?.find((e) => e.author._id === currentUserId);
+    const productIdArr = bottle?.map((e) => e.product?._id);
     const final = defaultRows?.map((row, idx) => {
       return {
         ...row,
-        order: orderIdArr[idx],
-        author: authorIdArr[idx],
+        order: orderIdArr._id,
+        author: currentUserId,
         product: productIdArr[idx],
       };
     });
-    final?.forEach((obj) => dispatch(stockActions.createStock(obj)));
-    defaultRows = undefined;
+
+    try {
+      dispatch(stockActions.createStock(final));
+      toast.success("Daily stock have been sent to Admin successfully");
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   useEffect(() => {
     dispatch(productActions.getProducts());
     dispatch(stockActions.getStocks());
     dispatch(orderActions.getOrders());
   }, [dispatch]);
-
-  return (
+  return loading ? (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <CircularProgress />
+    </div>
+  ) : (
     <>
-      {defaultRows ? (
-        <div style={{ height: 400, width: "100%" }}>
+      {defaultRows.length > 0 ? (
+        <div className="order" style={{ height: "100%", width: "100%" }}>
+          <h2 disabled>Stock of {moment().format("DD-MM-YYYY")}</h2>
           <DataGrid
             rows={defaultRows}
             columns={columns}
             autoHeight={true}
             checkboxSelection={false}
           />
-          <Button
-            variant="contained"
-            style={{ backgroundColor: "#2EC0FF", color: "white" }}
-            color="primary"
-            onClick={handleClickButton}
-          >
-            Submit
-          </Button>
+          <div className="button-container">
+            <Button
+              className="order-button"
+              variant="contained"
+              color="primary"
+              style={{ backgroundColor: "#2EC0FF" }}
+              onClick={handleClickButton}
+            >
+              Submit Order
+            </Button>
+          </div>
         </div>
       ) : (
         <div>Today Stock has been created. Please come back tomorrow</div>

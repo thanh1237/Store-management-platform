@@ -13,6 +13,7 @@ import Container from "@material-ui/core/Container";
 import { useDispatch } from "react-redux";
 import authActions from "redux/actions/auth.actions";
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { userActions } from "redux/actions";
 
 function Copyright() {
   return (
@@ -72,6 +73,7 @@ export default function SignUp(props) {
   const handleCreateAccount = (e) => {
     e.preventDefault();
     dispatch(authActions.register({ ...form, role }));
+    dispatch(userActions.getUsers());
     handleClose();
   };
   return (

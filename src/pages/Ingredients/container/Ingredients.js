@@ -16,11 +16,10 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import PopOver from "pages/Product/components/PopOver";
 import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "redux/actions";
-import ProductModal from "pages/Product/container/ProductModal";
+import IngredientModal from "pages/Ingredients/components/IngredientModal";
 import { Backdrop, Button, Fade, Modal } from "@material-ui/core";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import CreateUpdateFrom from "pages/Product/components/CreateUpdateFrom";
-import { useState } from "react";
+import CreateUpdateIngredient from "pages/Ingredients/components/CreateUpdateIngredient";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
@@ -77,6 +76,7 @@ function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
+
   const isCocktail = (type) => {
     if (type === "Cocktail" || type === "Mocktail") {
       return true;
@@ -109,55 +109,23 @@ function Row(props) {
         <TableCell align="middle">{row.price}</TableCell>
         <TableCell align="middle">{row.action}</TableCell>
       </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                Ingredients
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Ingredient</TableCell>
-                    <TableCell>Consumption</TableCell>
-                    <TableCell align="middle">Unit</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row?.ingredients.map((e) => (
-                    <TableRow key={e.id}>
-                      <TableCell component="th" scope="row">
-                        {e.ingredient}
-                      </TableCell>
-                      <TableCell>{e.consumption}</TableCell>
-                      <TableCell align="middle">{e.unit}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+      <TableRow></TableRow>
     </React.Fragment>
   );
 }
 
-export default function CollapsibleTable() {
+export default function Ingredients() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.product.loading);
   const listProducts = useSelector(
     (state) => state?.product?.products?.products
   );
-  const loading = useSelector((state) => state.product.loading);
   const singleProduct = useSelector((state) => state.product?.singleProduct);
   const [open, setOpen] = React.useState(false);
-  const nonIngredientList = listProducts?.filter(
-    (e) => e.type !== "Ingredient"
-  );
-  const nonAlcoholList = nonIngredientList?.filter((e) => e.type !== "Alcohol");
 
+  const nonCocktailList = listProducts?.filter((e) => e.type !== "Cocktail");
+  const nonMocktailList = nonCocktailList?.filter((e) => e.type !== "Mocktail");
   const deleteProduct = (id) => {
     dispatch(productActions.deleteProduct(id));
   };
@@ -172,16 +140,14 @@ export default function CollapsibleTable() {
     await dispatch(productActions.getProducts());
   };
   let vietNamD = Intl.NumberFormat("vi-VI");
-  let rows = nonAlcoholList?.map((product, index) => {
+  let rows = nonMocktailList?.map((product, index) => {
     return createData(
       index,
       product.name,
-      product.type,
       product.unit,
-      product.quantity,
+      product.capacity,
       `${vietNamD.format(product.cost)} đ`,
-      `${vietNamD.format(product.price)} đ`,
-      product.ingredients,
+      product.quantity,
       <div className="actions">
         <Button
           variant="contained"
@@ -203,17 +169,11 @@ export default function CollapsibleTable() {
           }}
         >
           <Fade in={open}>
-            {!loading ? (
-              <CreateUpdateFrom
-                handleClose={handleClose}
-                singleProduct={singleProduct}
-                listProducts={listProducts}
-              />
-            ) : (
-              <div className={classes.loading}>
-                <CircularProgress />
-              </div>
-            )}
+            <CreateUpdateIngredient
+              handleClose={handleClose}
+              singleProduct={singleProduct}
+              listProducts={listProducts}
+            />
           </Fade>
         </Modal>
         <PopOver handleDelete={deleteProduct} id={product._id} />
@@ -225,14 +185,15 @@ export default function CollapsibleTable() {
   }, [dispatch]);
   return loading ? (
     <div className={classes.loading}>
+      {" "}
       <CircularProgress />
     </div>
   ) : (
     <div className="create-button">
-      <ProductModal listProducts={listProducts} />
+      <IngredientModal listProducts={listProducts} />
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
-          <TableHead style={{ backgroundColor: "black" }}>
+          <TableHead style={{ backgroundColor: "black", width: "100%" }}>
             <TableRow>
               <TableCell />
               <TableCell style={{ color: "white" }}>Index</TableCell>
@@ -240,19 +201,16 @@ export default function CollapsibleTable() {
                 Name
               </TableCell>
               <TableCell style={{ color: "white" }} align="middle">
-                Type
-              </TableCell>
-              <TableCell style={{ color: "white" }} align="middle">
                 Unit
               </TableCell>
               <TableCell style={{ color: "white" }} align="middle">
-                Quantity
+                Unit Capacity
               </TableCell>
               <TableCell style={{ color: "white" }} align="middle">
                 Cost
               </TableCell>
               <TableCell style={{ color: "white" }} align="middle">
-                Price
+                Daily Quantity Needed
               </TableCell>
               <TableCell
                 style={{
