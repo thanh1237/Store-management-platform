@@ -25,7 +25,18 @@ const getSingleProduct = (id) => async (dispatch) => {
   }
 };
 const createProducts =
-  ({ type, unit, name, cost, capacity, price, ingredients, quantity, stock }) =>
+  ({
+    type,
+    unit,
+    name,
+    cost,
+    capacity,
+    capacityUnit,
+    price,
+    ingredients,
+    quantity,
+    stock,
+  }) =>
   async (dispatch) => {
     const body = {
       type,
@@ -33,6 +44,7 @@ const createProducts =
       name,
       cost,
       capacity,
+      capacityUnit,
       price,
       ingredients,
       quantity,

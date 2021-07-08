@@ -177,7 +177,7 @@ export default function CollapsibleTable() {
       product.name,
       product.type,
       product.unit,
-      product.quantity,
+      `${product.quantity + " " + product.unit}`,
       `${vietNamD.format(product.cost)} đ`,
       `${vietNamD.format(product.price)} đ`,
       product.ingredients,

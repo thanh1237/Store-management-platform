@@ -20,26 +20,23 @@ export default function ValueGetterGrid() {
   const stockByUser = listStock?.filter((stock) => {
     return stock.author === currentUserId;
   });
-
   const datesToBeChecked = stockByUser?.map((stock) =>
     moment(stock.createdAt).format("YYYY-MM-DD")
   );
+
   const newestStockList = stockByUser?.filter((stock) => {
-    let createdDate = stock.createdAt;
+    let createdDate = moment(stock.createdAt).format("YYYY-MM-DD");
     const dateToCheckFor = moment().format("YYYY-MM-DD");
     datesToBeChecked.forEach((date) => {
       let diff = moment(date).diff(moment(dateToCheckFor), "days");
+      let diff2 = moment(createdDate).diff(moment(dateToCheckFor), "days");
       if (diff === 0) {
-        nearestDate = moment().format("YYYY-MM-DD");
-      } else {
-        if (!nearestDate) {
-          if (moment(date).diff(moment(nearestDate), "days") < 0) {
-            nearestDate = date;
-          }
-        }
+        return (nearestDate = moment().format("YYYY-MM-DD"));
+      } else if (diff < 0 && diff === diff2 && !nearestDate) {
+        nearestDate = date;
       }
     });
-    return moment(createdDate).format("YYYY-MM-DD") === nearestDate;
+    return createdDate === nearestDate;
   });
 
   if (nearestDate === moment().format("YYYY-MM-DD")) {
@@ -52,9 +49,16 @@ export default function ValueGetterGrid() {
         e.product?.type === "Ingredient"
     );
   }
-
-  if (bottle) {
-    defaultRows = bottle?.map((row, idx) => {
+  console.log("nearestDate", nearestDate);
+  const reduceList = bottle?.reduce((total, product) => {
+    let tableArray = total.map((pro) => pro.product.name);
+    if (!tableArray.includes(product.product.name)) {
+      return [...total, product];
+    }
+    return total;
+  }, []);
+  if (reduceList) {
+    defaultRows = reduceList?.map((row, idx) => {
       return {
         id: `${idx + 1}`,
         name: row.product?.name,

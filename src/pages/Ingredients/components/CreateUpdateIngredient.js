@@ -68,6 +68,7 @@ export default function CreateUpdateIngredient(props) {
     unit: "",
     name: "",
     capacity: "",
+    capacityUnit: "ml",
     cost: "",
     price: "",
     ingredients: [
@@ -153,6 +154,7 @@ export default function CreateUpdateIngredient(props) {
       unit: "",
       name: "",
       capacity: "",
+      capacityUnit: "ml",
       price: "",
       ingredients: [
         {
@@ -175,6 +177,7 @@ export default function CreateUpdateIngredient(props) {
         name: singleProduct.name,
         cost: singleProduct.cost,
         capacity: singleProduct.capacity,
+        capacityUnit: singleProduct.capacityUnit,
         price: singleProduct.price,
         ingredients: singleProduct.ingredients,
         quantity: singleProduct.quantity,
@@ -270,9 +273,6 @@ export default function CreateUpdateIngredient(props) {
                 name="cost"
                 label="Cost"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 onChange={handleChange}
                 fullWidth
                 value={form.cost}
@@ -281,6 +281,57 @@ export default function CreateUpdateIngredient(props) {
             <Grid
               item
               xs={12}
+              sm={6}
+              style={{
+                display:
+                  form.type === "Cocktail" ||
+                  form.type === "Mocktail" ||
+                  !form.type
+                    ? "none"
+                    : null,
+                marginBottom: "10px",
+              }}
+            >
+              <TextField
+                id="filled-number"
+                name="quantity"
+                label="Daily Quantity Needed"
+                type="number"
+                variant="outlined"
+                onChange={handleChange}
+                fullWidth
+                value={form.quantity}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              style={{
+                display:
+                  form.type === "Cocktail" ||
+                  !form.type ||
+                  form.type === "Mocktail"
+                    ? "none"
+                    : null,
+                marginBottom: "10px",
+              }}
+            >
+              <TextField
+                id="filled-number"
+                name="stock"
+                label="Stock"
+                type="number"
+                variant="outlined"
+                onChange={handleChange}
+                fullWidth
+                value={form.stock}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
               style={{
                 display:
                   form.type === "Mocktail" || form.type === "Cocktail"
@@ -295,12 +346,31 @@ export default function CreateUpdateIngredient(props) {
                 name="capacity"
                 label="Unit Capacity"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 onChange={handleChange}
                 fullWidth
                 value={form.capacity}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="unit"
+                label="Unit Of Capacity Unit"
+                name="capacityUnit"
+                onChange={handleChange}
+                value={form.capacityUnit}
+                disabled={true}
+                style={{
+                  display:
+                    form.type === "Beer" ||
+                    form.type === "Alcohol" ||
+                    form.type === "Ingredient" ||
+                    !form.type
+                      ? null
+                      : "none",
+                }}
               />
             </Grid>
             <Grid
@@ -321,9 +391,6 @@ export default function CreateUpdateIngredient(props) {
                 name="price"
                 label="Price"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
@@ -460,62 +527,6 @@ export default function CreateUpdateIngredient(props) {
               >
                 <RemoveCircleOutlineOutlinedIcon />
               </Button>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              style={{
-                display:
-                  form.type === "Cocktail" ||
-                  form.type === "Mocktail" ||
-                  !form.type
-                    ? "none"
-                    : null,
-                marginBottom: "10px",
-              }}
-            >
-              <TextField
-                id="filled-number"
-                name="quantity"
-                label="Daily Quantity Needed"
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                onChange={handleChange}
-                fullWidth
-                value={form.quantity}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              style={{
-                display:
-                  form.type === "Cocktail" ||
-                  !form.type ||
-                  form.type === "Mocktail"
-                    ? "none"
-                    : null,
-                marginBottom: "10px",
-              }}
-            >
-              <TextField
-                id="filled-number"
-                name="stock"
-                label="Stock"
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                onChange={handleChange}
-                fullWidth
-                value={form.stock}
-              />
             </Grid>
           </Grid>
           <Button

@@ -147,7 +147,7 @@ export default function Ingredients() {
       product.unit,
       product.capacity,
       `${vietNamD.format(product.cost)} đ`,
-      product.quantity,
+      `${product.quantity + " " + product.unit}`,
       <div className="actions">
         <Button
           variant="contained"

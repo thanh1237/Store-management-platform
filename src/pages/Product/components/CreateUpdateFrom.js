@@ -72,6 +72,8 @@ export default function CreateUpdateFrom(props) {
     name: "",
     cost: "",
     price: "",
+    capacity: "",
+    capacityUnit: "ml",
     ingredients: [
       {
         ingredient: "",
@@ -101,7 +103,7 @@ export default function CreateUpdateFrom(props) {
     costArr.push(cost);
     let final = cost?.reduce((a, b) => a + b, 0);
     setFields(values);
-    setForm({ ...form, cost: final });
+    setForm({ ...form, cost: Intl.NumberFormat().format(final) });
   }
 
   function handleAdd() {
@@ -125,9 +127,13 @@ export default function CreateUpdateFrom(props) {
   const handleChangeType = (event) => {
     setForm({ ...form, type: event.target.value });
   };
+
   const handleChange = (e) => {
     e.preventDefault();
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleCreateOrUpdateProduct = (e) => {
@@ -171,7 +177,7 @@ export default function CreateUpdateFrom(props) {
     let values = [...fields];
     setObject(newValue);
     values[idx].ingredient = newValue?.name;
-    values[idx].unit = newValue?.unit;
+    values[idx].unit = newValue?.capacityUnit;
     values.forEach((ob, i) => {
       ob.index = i;
       if (i === values[idx].index) {
@@ -200,21 +206,22 @@ export default function CreateUpdateFrom(props) {
         price: singleProduct.price,
         ingredients: singleProduct.ingredients,
         quantity: singleProduct.quantity,
+        capacityUnit: singleProduct.capacityUnit,
         stock: singleProduct.stock,
       });
       setFields(singleProduct?.ingredients);
     }
     if (form.type && form.type === "Cocktail") {
-      setForm({ ...form, unit: "glass" });
+      setForm({ ...form, unit: "Ly" });
     }
     if (form.type && form.type === "Mocktail") {
-      setForm({ ...form, unit: "glass" });
+      setForm({ ...form, unit: "Ly" });
     }
     if (form.type && form.type === "Beer") {
-      setForm({ ...form, unit: "btl" });
+      setForm({ ...form, unit: "Chai" });
     }
     if (form.type && form.type === "Alcohol") {
-      setForm({ ...form, unit: "btl" });
+      setForm({ ...form, unit: "Chai" });
     }
   }, [
     dispatch,
@@ -295,9 +302,6 @@ export default function CreateUpdateFrom(props) {
                 name="cost"
                 label="Cost"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 onChange={handleChange}
                 fullWidth
                 value={form.cost}
@@ -309,9 +313,6 @@ export default function CreateUpdateFrom(props) {
                 name="price"
                 label="Price"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
@@ -390,9 +391,6 @@ export default function CreateUpdateFrom(props) {
                       id="filled-number"
                       name="consumption"
                       label="Consumption"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       onChange={(e) => handleChangeInputs(idx, e)}
                       value={fields[idx]?.consumption}
                       type="number"
@@ -407,9 +405,6 @@ export default function CreateUpdateFrom(props) {
                       id="filled-number"
                       name="unit"
                       label="Unit"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       onChange={(e) => handleChangeInputs(idx, e)}
                       value={fields[idx]?.unit}
                     />
@@ -462,9 +457,6 @@ export default function CreateUpdateFrom(props) {
                 name="quantity"
                 label="Daily Quantity Needed"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
@@ -490,13 +482,55 @@ export default function CreateUpdateFrom(props) {
                 name="stock"
                 label="Stock"
                 type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
                 value={form.stock}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              style={{
+                display:
+                  form.type === "Mocktail" || form.type === "Cocktail"
+                    ? "none"
+                    : null,
+              }}
+            >
+              <TextField
+                autoComplete="capacity"
+                variant="outlined"
+                id="filled-number"
+                name="capacity"
+                label="Unit Capacity"
+                type="number"
+                onChange={handleChange}
+                fullWidth
+                value={form.capacity}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="unit"
+                label="Unit Of Capacity Unit"
+                name="capacityUnit"
+                onChange={handleChange}
+                value={form.capacityUnit}
+                disabled={true}
+                style={{
+                  display:
+                    form.type === "Beer" ||
+                    form.type === "Alcohol" ||
+                    form.type === "Ingredient" ||
+                    !form.type
+                      ? null
+                      : "none",
+                }}
               />
             </Grid>
           </Grid>
