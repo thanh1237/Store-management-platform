@@ -93,7 +93,7 @@ export default function CreateUpdateFrom(props) {
     if (event.target.name === "unit") {
       values[i].unit = event.target.value;
     }
-    setForm({ ...form, ingredients: fields });
+
     let consumptionArr = values.map((e) => e.consumption);
     let cost = consumptionArr.map((e, idx) => {
       return (e = Number(
@@ -103,7 +103,11 @@ export default function CreateUpdateFrom(props) {
     costArr.push(cost);
     let final = cost?.reduce((a, b) => a + b, 0);
     setFields(values);
-    setForm({ ...form, cost: Intl.NumberFormat().format(final) });
+    setForm({
+      ...form,
+      cost: Intl.NumberFormat().format(final),
+      ingredients: fields,
+    });
   }
 
   function handleAdd() {
@@ -121,6 +125,7 @@ export default function CreateUpdateFrom(props) {
     const values = [...fields];
     values.splice(values.length - 1, 1);
     setFields(values);
+    setForm({ ...form, ingredients: values });
     setCount(count - 1);
   }
 
@@ -143,6 +148,7 @@ export default function CreateUpdateFrom(props) {
     } else if (singleProduct) {
       dispatch(productActions.updateProduct(singleProduct._id, form));
     }
+    dispatch(productActions.getProducts());
     handleClose();
     setForm({
       type: "",
@@ -194,7 +200,6 @@ export default function CreateUpdateFrom(props) {
     costArr = totalArr.map((e) => e.cost);
     setFields(values);
   };
-
   useEffect(() => {
     if (singleProduct) {
       setForm({
@@ -209,8 +214,8 @@ export default function CreateUpdateFrom(props) {
         capacityUnit: singleProduct.capacityUnit,
         stock: singleProduct.stock,
       });
-      setFields(singleProduct?.ingredients);
     }
+    setFields(singleProduct?.ingredients);
     if (form.type && form.type === "Cocktail") {
       setForm({ ...form, unit: "Ly" });
     }
@@ -223,15 +228,7 @@ export default function CreateUpdateFrom(props) {
     if (form.type && form.type === "Alcohol") {
       setForm({ ...form, unit: "Chai" });
     }
-  }, [
-    dispatch,
-    form.type,
-    form.cost,
-    singleProduct,
-    fields.consumption,
-    totalCost,
-    totalArr,
-  ]);
+  }, [dispatch, form.type, singleProduct, totalArr]);
   return (
     <Container component="main" maxWidth="sm">
       <CssBaseline />

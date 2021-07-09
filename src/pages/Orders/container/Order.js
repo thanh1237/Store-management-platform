@@ -23,7 +23,6 @@ export default function ValueGetterGrid() {
   const datesToBeChecked = stockByUser?.map((stock) =>
     moment(stock.createdAt).format("YYYY-MM-DD")
   );
-
   const newestStockList = stockByUser?.filter((stock) => {
     let createdDate = moment(stock.createdAt).format("YYYY-MM-DD");
     const dateToCheckFor = moment().format("YYYY-MM-DD");
@@ -49,7 +48,7 @@ export default function ValueGetterGrid() {
         e.product?.type === "Ingredient"
     );
   }
-  console.log("nearestDate", nearestDate);
+
   const reduceList = bottle?.reduce((total, product) => {
     let tableArray = total.map((pro) => pro.product.name);
     if (!tableArray.includes(product.product.name)) {

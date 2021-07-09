@@ -17,7 +17,7 @@ import PopOver from "pages/Product/components/PopOver";
 import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "redux/actions";
 import ProductModal from "pages/Product/container/ProductModal";
-import { Backdrop, Button, Fade, Modal } from "@material-ui/core";
+import { Backdrop, Button, Fade, Dialog } from "@material-ui/core";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import CreateUpdateFrom from "pages/Product/components/CreateUpdateFrom";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -189,7 +189,7 @@ export default function CollapsibleTable() {
         >
           <EditOutlinedIcon style={{ color: "white" }} />
         </Button>
-        <Modal
+        <Dialog
           aria-labelledby="transition-modal-title"
           aria-describedby="transition-modal-description"
           className={classes.modal}
@@ -214,7 +214,7 @@ export default function CollapsibleTable() {
               </div>
             )}
           </Fade>
-        </Modal>
+        </Dialog>
         <PopOver handleDelete={deleteProduct} id={product._id} />
       </div>
     );
