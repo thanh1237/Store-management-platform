@@ -17,12 +17,15 @@ export default function ValueGetterGrid() {
   let defaultRows = [];
   let bottle;
   let nearestDate;
+
   const stockByUser = listStock?.filter((stock) => {
     return stock.author === currentUserId;
   });
+
   const datesToBeChecked = stockByUser?.map((stock) =>
     moment(stock.createdAt).format("YYYY-MM-DD")
   );
+
   const newestStockList = stockByUser?.filter((stock) => {
     let createdDate = moment(stock.createdAt).format("YYYY-MM-DD");
     const dateToCheckFor = moment().format("YYYY-MM-DD");
@@ -38,16 +41,12 @@ export default function ValueGetterGrid() {
     return createdDate === nearestDate;
   });
 
-  if (nearestDate === moment().format("YYYY-MM-DD")) {
-    bottle = [];
-  } else {
-    bottle = newestStockList?.filter(
-      (e) =>
-        e.product?.type === "Alcohol" ||
-        e.product?.type === "Beer" ||
-        e.product?.type === "Ingredient"
-    );
-  }
+  bottle = newestStockList?.filter(
+    (e) =>
+      e.product?.type === "Alcohol" ||
+      e.product?.type === "Beer" ||
+      e.product?.type === "Ingredient"
+  );
 
   const reduceList = bottle?.reduce((total, product) => {
     let tableArray = total.map((pro) => pro.product.name);
@@ -56,7 +55,7 @@ export default function ValueGetterGrid() {
     }
     return total;
   }, []);
-  if (reduceList) {
+  if (reduceList && nearestDate !== moment().format("YYYY-MM-DD")) {
     defaultRows = reduceList?.map((row, idx) => {
       return {
         id: `${idx + 1}`,
@@ -70,7 +69,18 @@ export default function ValueGetterGrid() {
       };
     });
   } else {
-    defaultRows = [];
+    defaultRows = reduceList?.map((row, idx) => {
+      return {
+        id: `${idx + 1}`,
+        name: row.product?.name,
+        start: row?.real,
+        stockIn: row?.stockIn,
+        stockOut: row?.stockOut,
+        estimate: row?.estimate,
+        real: row?.real,
+        note: row?.note,
+      };
+    });
   }
 
   const getEstimate = (params) => {
@@ -100,7 +110,7 @@ export default function ValueGetterGrid() {
       field: "stockIn",
       headerName: "In",
       width: 130,
-      editable: true,
+      editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -109,7 +119,7 @@ export default function ValueGetterGrid() {
       field: "stockOut",
       headerName: "Out",
       width: 130,
-      editable: true,
+      editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -124,7 +134,7 @@ export default function ValueGetterGrid() {
       field: "real",
       headerName: "Real Stock",
       width: 200,
-      editable: true,
+      editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -133,7 +143,7 @@ export default function ValueGetterGrid() {
       field: "note",
       headerName: "Note",
       width: 300,
-      editable: true,
+      editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -159,6 +169,8 @@ export default function ValueGetterGrid() {
     }
   };
 
+  console.log("defaultRows", defaultRows);
+
   useEffect(() => {
     dispatch(productActions.getProducts());
     dispatch(stockActions.getStocks());
@@ -170,30 +182,52 @@ export default function ValueGetterGrid() {
     </div>
   ) : (
     <>
-      {defaultRows.length > 0 ? (
-        <div className="order" style={{ height: "100%", width: "100%" }}>
-          <h2 disabled>Stock of {moment().format("DD-MM-YYYY")}</h2>
-          <DataGrid
-            rows={defaultRows}
-            columns={columns}
-            autoHeight={true}
-            checkboxSelection={false}
-          />
-          <div className="button-container">
-            <Button
-              className="order-button"
-              variant="contained"
-              color="primary"
-              style={{ backgroundColor: "#2EC0FF" }}
-              onClick={handleClickButton}
-            >
-              Submit Order
-            </Button>
-          </div>
+      <div className="order" style={{ height: "100%", width: "100%" }}>
+        <h2 disabled>
+          Stock of {moment().format("DD-MM-YYYY")}
+          <span
+            style={{
+              display:
+                nearestDate !== moment().format("YYYY-MM-DD") ? "none" : null,
+            }}
+          >
+            {` (Read Only)`}
+          </span>
+        </h2>
+        <DataGrid
+          rows={defaultRows}
+          columns={columns}
+          autoHeight={true}
+          checkboxSelection={false}
+        />
+        <div className="button-container">
+          <Button
+            className="order-button"
+            variant="contained"
+            color="primary"
+            style={{
+              backgroundColor:
+                nearestDate !== moment().format("YYYY-MM-DD")
+                  ? "#2EC0FF"
+                  : null,
+            }}
+            onClick={handleClickButton}
+            disabled={
+              nearestDate !== moment().format("YYYY-MM-DD") ? false : true
+            }
+          >
+            Submit Order
+          </Button>
         </div>
-      ) : (
-        <div>Today Stock has been created. Please come back tomorrow</div>
-      )}
+      </div>
+      <h2
+        style={{
+          display:
+            nearestDate !== moment().format("YYYY-MM-DD") ? "none" : null,
+        }}
+      >
+        Today Stock has been created. Please come back tomorrow
+      </h2>
     </>
   );
 }

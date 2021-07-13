@@ -23,6 +23,19 @@ const authReducer = (state = initialState, action) => {
     case types.LOGIN_FAILURE:
       return { ...state, loading: false, isAuthenticated: false };
 
+    case types.LOGIN_CUKCUK_REQUEST:
+      return { ...state, loading: true };
+    case types.LOGIN_CUKCUK_SUCCESS:
+      localStorage.setItem("cukcukAccessToken", payload.AccessToken);
+      return {
+        ...state,
+        cukcukAccessToken: payload.AccessToken,
+        loading: false,
+        isAuthenticated: true,
+      };
+    case types.LOGIN_CUKCUK_FAILURE:
+      return { ...state, loading: false, isAuthenticated: false };
+
     case types.GET_CURRENT_USER_REQUEST:
       return { ...state, loading: true };
     case types.GET_CURRENT_USER_SUCCESS:

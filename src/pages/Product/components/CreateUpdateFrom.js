@@ -52,13 +52,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateUpdateFrom(props) {
-  const { totalArr, handleClose, singleProduct, listProducts, setTotalArr } =
-    props;
+  const { totalArr, handleClose, singleProduct, listProducts } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const [count, setCount] = useState(0);
-  const [totalCost, setTotalCost] = useState(0);
-  const [object, setObject] = useState();
   const [fields, setFields] = useState([
     {
       ingredient: "",
@@ -66,6 +63,7 @@ export default function CreateUpdateFrom(props) {
       unit: "",
     },
   ]);
+
   const [form, setForm] = useState({
     type: "",
     unit: "",
@@ -179,9 +177,9 @@ export default function CreateUpdateFrom(props) {
     options: nonMocktailList,
     getOptionLabel: (option) => option.name,
   };
+
   const handleChangeAuto = (event, newValue, idx) => {
     let values = [...fields];
-    setObject(newValue);
     values[idx].ingredient = newValue?.name;
     values[idx].unit = newValue?.capacityUnit;
     values.forEach((ob, i) => {
@@ -214,8 +212,8 @@ export default function CreateUpdateFrom(props) {
         capacityUnit: singleProduct.capacityUnit,
         stock: singleProduct.stock,
       });
+      setFields(singleProduct.ingredients);
     }
-    setFields(singleProduct?.ingredients);
     if (form.type && form.type === "Cocktail") {
       setForm({ ...form, unit: "Ly" });
     }
@@ -367,7 +365,7 @@ export default function CreateUpdateFrom(props) {
                       onChange={(event, newValue) => {
                         handleChangeAuto(event, newValue, idx);
                       }}
-                      value={{ name: fields[idx]?.ingredient }}
+                      value={{ name: this?.fields[idx]?.ingredient }}
                       getOptionSelected={(option) => {
                         return option.name === fields[idx]?.ingredient;
                       }}
@@ -389,7 +387,7 @@ export default function CreateUpdateFrom(props) {
                       name="consumption"
                       label="Consumption"
                       onChange={(e) => handleChangeInputs(idx, e)}
-                      value={fields[idx]?.consumption}
+                      value={this?.fields[idx]?.consumption}
                       type="number"
                     />
                   </Grid>

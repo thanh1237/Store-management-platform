@@ -1,6 +1,9 @@
 import * as types from "../constants/auth.constants";
 import api from "../api";
+import cukcukApi from "../api-cukcuk";
 import { toast } from "react-toastify";
+import crypto from "crypto";
+
 const loginRequest =
   ({ email, password }) =>
   async (dispatch) => {
@@ -10,11 +13,39 @@ const loginRequest =
       dispatch({ type: types.LOGIN_SUCCESS, payload: res.data.data });
       const name = res.data.data.user.name;
       toast.success(`Welcome back ${name}`);
+      dispatch(loginCukcuk());
     } catch (error) {
       console.log(error);
       dispatch({ type: types.LOGIN_FAILURE, payload: error });
     }
   };
+
+const loginCukcuk = () => async (dispatch) => {
+  dispatch({ type: types.LOGIN_CUKCUK_REQUEST, payload: null });
+  try {
+    const date = new Date();
+    const appSecret = process.env.REACT_APP_SECRET_KEY;
+    const string = JSON.stringify({
+      AppID: "CUKCUKOpenPlatform",
+      Domain: "bake",
+      LoginTime: date,
+    });
+    const hash = crypto
+      .createHmac("sha256", appSecret)
+      .update(string)
+      .digest("hex");
+    const res = await cukcukApi.post("/Account/Login", {
+      AppID: "CUKCUKOpenPlatform",
+      Domain: "bake",
+      LoginTime: date,
+      SignatureInfo: hash,
+    });
+    dispatch({ type: types.LOGIN_CUKCUK_SUCCESS, payload: res.data.Data });
+  } catch (error) {
+    console.log(error);
+    dispatch({ type: types.LOGIN_CUKCUK_FAILURE, payload: error });
+  }
+};
 
 const getCurrentUser = (accessToken) => async (dispatch) => {
   dispatch({ type: types.GET_CURRENT_USER_REQUEST, payload: null });
@@ -55,5 +86,6 @@ const authActions = {
   register,
   getCurrentUser,
   logout,
+  loginCukcuk,
 };
 export default authActions;

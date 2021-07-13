@@ -1,8 +1,8 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const api = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_API + "/api",
+const cukcukApi = axios.create({
+  baseURL: process.env.REACT_APP_CUKCUK_API + "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,7 +11,7 @@ const api = axios.create({
 /**
  * console.log all requests and responses
  */
-api.interceptors.request.use(
+cukcukApi.interceptors.request.use(
   (request) => {
     return request;
   },
@@ -20,10 +20,10 @@ api.interceptors.request.use(
   }
 );
 
-api.interceptors.response.use(
+cukcukApi.interceptors.response.use(
   (response) => {
     if (response.data.data && response.data.data.accessToken) {
-      api.defaults.headers.common["authorization"] =
+      cukcukApi.defaults.headers.common["authorization"] =
         "Bearer " + response.data.data.accessToken;
     }
     return response;
@@ -38,4 +38,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default cukcukApi;
