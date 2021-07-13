@@ -78,6 +78,7 @@ const register =
 const logout = () => (dispatch) => {
   delete api.defaults.headers.common["authorization"];
   localStorage.removeItem("accessToken");
+  localStorage.removeItem("cukcukAccessToken");
   dispatch({ type: types.LOGOUT, payload: null });
 };
 
