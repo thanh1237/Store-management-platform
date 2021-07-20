@@ -1,9 +1,12 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
+const accessToken = localStorage.getItem("cukcukAccessToken");
 const cukcukApi = axios.create({
   baseURL: process.env.REACT_APP_CUKCUK_API + "/api",
   headers: {
+    CompanyCode: "bake",
+    Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
   },
 });

@@ -83,6 +83,7 @@ export default function CreateUpdateFrom(props) {
     stock: "",
   });
   let costArr = [];
+
   function handleChangeInputs(i, event, val) {
     let values = [...fields];
     if (event.target.name === "consumption") {
@@ -100,6 +101,12 @@ export default function CreateUpdateFrom(props) {
     });
     costArr.push(cost);
     let final = cost?.reduce((a, b) => a + b, 0);
+    if (form.type === "Cocktail") {
+      final = final + Math.floor((final * 10) / 100);
+    }
+    if (form.type === "Food") {
+      final = final + Math.floor((final * 20) / 100);
+    }
     setFields(values);
     setForm({
       ...form,
@@ -198,6 +205,7 @@ export default function CreateUpdateFrom(props) {
     costArr = totalArr.map((e) => e.cost);
     setFields(values);
   };
+
   useEffect(() => {
     if (singleProduct) {
       setForm({
@@ -216,6 +224,9 @@ export default function CreateUpdateFrom(props) {
     }
     if (form.type && form.type === "Cocktail") {
       setForm({ ...form, unit: "Ly" });
+    }
+    if (form.type && form.type === "Food") {
+      setForm({ ...form, unit: "Dish" });
     }
     if (form.type && form.type === "Mocktail") {
       setForm({ ...form, unit: "Ly" });
@@ -259,6 +270,7 @@ export default function CreateUpdateFrom(props) {
                   <MenuItem value={"Beer"}>Beer</MenuItem>
                   <MenuItem value={"Cocktail"}>Cocktail</MenuItem>
                   <MenuItem value={"Mocktail"}>Mocktail</MenuItem>
+                  <MenuItem value={"Food"}>Food</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -290,7 +302,11 @@ export default function CreateUpdateFrom(props) {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                disabled={form.type === "Cocktail" || form.type === "Mocktail"}
+                disabled={
+                  form.type === "Cocktail" ||
+                  form.type === "Mocktail" ||
+                  form.type === "Food"
+                }
                 autoComplete="cost"
                 variant="outlined"
                 id="filled-number"
@@ -365,7 +381,7 @@ export default function CreateUpdateFrom(props) {
                       onChange={(event, newValue) => {
                         handleChangeAuto(event, newValue, idx);
                       }}
-                      value={{ name: this?.fields[idx]?.ingredient }}
+                      value={{ name: fields[idx]?.ingredient }}
                       getOptionSelected={(option) => {
                         return option.name === fields[idx]?.ingredient;
                       }}
@@ -387,7 +403,7 @@ export default function CreateUpdateFrom(props) {
                       name="consumption"
                       label="Consumption"
                       onChange={(e) => handleChangeInputs(idx, e)}
-                      value={this?.fields[idx]?.consumption}
+                      value={fields[idx]?.consumption}
                       type="number"
                     />
                   </Grid>
@@ -441,7 +457,8 @@ export default function CreateUpdateFrom(props) {
                 display:
                   form.type === "Cocktail" ||
                   !form.type ||
-                  form.type === "Mocktail"
+                  form.type === "Mocktail" ||
+                  form.type === "Food"
                     ? "none"
                     : null,
                 marginBottom: "10px",
@@ -466,7 +483,8 @@ export default function CreateUpdateFrom(props) {
                 display:
                   form.type === "Cocktail" ||
                   !form.type ||
-                  form.type === "Mocktail"
+                  form.type === "Mocktail" ||
+                  form.type === "Food"
                     ? "none"
                     : null,
                 marginBottom: "10px",
@@ -489,7 +507,9 @@ export default function CreateUpdateFrom(props) {
               sm={6}
               style={{
                 display:
-                  form.type === "Mocktail" || form.type === "Cocktail"
+                  form.type === "Mocktail" ||
+                  form.type === "Cocktail" ||
+                  form.type === "Food"
                     ? "none"
                     : null,
               }}

@@ -1,21 +1,18 @@
 import * as React from "react";
 import { DataGrid } from "@material-ui/data-grid";
-import { useEffect } from "react";
-import { productActions, stockActions, orderActions } from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@material-ui/core";
+import { orderActions, productActions, stockActions } from "redux/actions";
+import { useEffect } from "react";
+import { Button, CircularProgress } from "@material-ui/core";
 import moment from "moment";
 import { toast } from "react-toastify";
-import CircularProgress from "@material-ui/core/CircularProgress";
 
-export default function ValueGetterGrid() {
+export default function Order() {
   const dispatch = useDispatch();
   const currentUserId = useSelector((state) => state.auth.user._id);
-  const listStock = useSelector((state) => state.stock.stocks.stocks);
-  const listOrder = useSelector((state) => state.order.orders.orders);
-  const loading = useSelector((state) => state.stock.loading);
-  let defaultRows = [];
-  let bottle;
+  const listStock = useSelector((state) => state?.stock?.stocks?.stocks);
+  const listOrder = useSelector((state) => state?.order?.orders?.orders);
+
   let nearestDate;
 
   const stockByUser = listStock?.filter((stock) => {
@@ -41,7 +38,7 @@ export default function ValueGetterGrid() {
     return createdDate === nearestDate;
   });
 
-  bottle = newestStockList?.filter(
+  const bottle = newestStockList?.filter(
     (e) =>
       e.product?.type === "Alcohol" ||
       e.product?.type === "Beer" ||
@@ -55,33 +52,6 @@ export default function ValueGetterGrid() {
     }
     return total;
   }, []);
-  if (reduceList && nearestDate !== moment().format("YYYY-MM-DD")) {
-    defaultRows = reduceList?.map((row, idx) => {
-      return {
-        id: `${idx + 1}`,
-        name: row.product?.name,
-        start: row?.real,
-        stockIn: 0,
-        stockOut: 0,
-        estimate: 0,
-        real: 0,
-        note: "",
-      };
-    });
-  } else {
-    defaultRows = reduceList?.map((row, idx) => {
-      return {
-        id: `${idx + 1}`,
-        name: row.product?.name,
-        start: row?.real,
-        stockIn: row?.stockIn,
-        stockOut: row?.stockOut,
-        estimate: row?.estimate,
-        real: row?.real,
-        note: row?.note,
-      };
-    });
-  }
 
   const getEstimate = (params) => {
     const estimate =
@@ -92,9 +62,10 @@ export default function ValueGetterGrid() {
   };
 
   const updateRows = (value, id, field) => {
-    const item = defaultRows.find((item) => item.id === id);
+    const item = rows?.find((item) => item.id === id);
     item[field] = value;
   };
+
   const columns = [
     {
       field: "name",
@@ -149,10 +120,41 @@ export default function ValueGetterGrid() {
       },
     },
   ];
+
+  let rows = [];
+
+  if (reduceList && nearestDate !== moment().format("YYYY-MM-DD")) {
+    rows = reduceList?.map((row, idx) => {
+      return {
+        id: `${idx + 1}`,
+        name: row.product?.name,
+        start: row?.real,
+        stockIn: 0,
+        stockOut: 0,
+        estimate: 0,
+        real: 0,
+        note: "",
+      };
+    });
+  } else {
+    rows = reduceList?.map((row, idx) => {
+      return {
+        id: `${idx + 1}`,
+        name: row.product?.name,
+        start: row?.real,
+        stockIn: row?.stockIn,
+        stockOut: row?.stockOut,
+        estimate: row?.estimate,
+        real: row?.real,
+        note: row?.note,
+      };
+    });
+  }
+
   const handleClickButton = () => {
     const orderIdArr = listOrder?.find((e) => e.author._id === currentUserId);
     const productIdArr = bottle?.map((e) => e.product?._id);
-    const final = defaultRows?.map((row, idx) => {
+    const final = rows?.map((row, idx) => {
       return {
         ...row,
         order: orderIdArr._id,
@@ -169,65 +171,57 @@ export default function ValueGetterGrid() {
     }
   };
 
-  console.log("defaultRows", defaultRows);
-
   useEffect(() => {
     dispatch(productActions.getProducts());
     dispatch(stockActions.getStocks());
     dispatch(orderActions.getOrders());
   }, [dispatch]);
-  return loading ? (
+
+  return !rows ? (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <CircularProgress />
     </div>
   ) : (
-    <>
-      <div className="order" style={{ height: "100%", width: "100%" }}>
-        <h2 disabled>
-          Stock of {moment().format("DD-MM-YYYY")}
-          <span
-            style={{
-              display:
-                nearestDate !== moment().format("YYYY-MM-DD") ? "none" : null,
-            }}
-          >
-            {` (Read Only)`}
-          </span>
-        </h2>
-        <DataGrid
-          rows={defaultRows}
-          columns={columns}
-          autoHeight={true}
-          checkboxSelection={false}
-        />
-        <div className="button-container">
-          <Button
-            className="order-button"
-            variant="contained"
-            color="primary"
-            style={{
-              backgroundColor:
-                nearestDate !== moment().format("YYYY-MM-DD")
-                  ? "#2EC0FF"
-                  : null,
-            }}
-            onClick={handleClickButton}
-            disabled={
-              nearestDate !== moment().format("YYYY-MM-DD") ? false : true
-            }
-          >
-            Submit Order
-          </Button>
-        </div>
+    <div style={{ height: "100%", width: "100%" }} className="order">
+      <h2>
+        Stock of {moment().format("DD-MM-YYYY")}
+        <span>
+          {nearestDate === moment().format("YYYY-MM-DD")
+            ? ` (Read Only)`
+            : ` (Not Submitted yet)`}
+        </span>
+      </h2>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        autoHeight={true}
+        checkboxSelection={false}
+      />
+      <div className="button-container">
+        <Button
+          className="order-button"
+          variant="contained"
+          color="primary"
+          style={{
+            backgroundColor:
+              nearestDate !== moment().format("YYYY-MM-DD") ? "#2EC0FF" : null,
+          }}
+          onClick={handleClickButton}
+          disabled={
+            nearestDate !== moment().format("YYYY-MM-DD") ? false : true
+          }
+        >
+          Submit Order
+        </Button>
       </div>
-      <h2
+      <h5
         style={{
           display:
             nearestDate !== moment().format("YYYY-MM-DD") ? "none" : null,
         }}
       >
-        Today Stock has been created. Please come back tomorrow
-      </h2>
-    </>
+        Today stock has been created. Please come back tomorrow
+      </h5>
+    </div>
   );
 }

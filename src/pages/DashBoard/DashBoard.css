@@ -1,0 +1,17 @@
+.revenue-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.revenue-num {
+  flex-shrink: 1;
+}
+
+.compare {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}

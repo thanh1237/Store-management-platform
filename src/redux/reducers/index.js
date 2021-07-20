@@ -5,6 +5,7 @@ import routeReducer from "./route.reducer";
 import userReducer from "./user.reducer";
 import stockReducer from "./stock.reducer";
 import orderReducer from "./order.reducer";
+import sainVoiceReducer from "./sainVoice.reducer";
 
 export default combineReducers({
   auth: authReducer,
@@ -13,4 +14,5 @@ export default combineReducers({
   user: userReducer,
   stock: stockReducer,
   order: orderReducer,
+  sainVoice: sainVoiceReducer,
 });

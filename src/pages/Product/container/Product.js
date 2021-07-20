@@ -77,7 +77,7 @@ function Row(props) {
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
   const isCocktail = (type) => {
-    if (type === "Cocktail" || type === "Mocktail") {
+    if (type === "Cocktail" || type === "Mocktail" || type === "Food") {
       return true;
     } else {
       return false;

@@ -9,26 +9,38 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import Title from "./Title";
+import moment from "moment";
 
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
 }
 
-const data = [
-  createData("00:00", 0),
-  createData("03:00", 300),
-  createData("06:00", 600),
-  createData("09:00", 800),
-  createData("12:00", 1500),
-  createData("15:00", 2000),
-  createData("18:00", 2400),
-  createData("21:00", 2400),
-  createData("24:00", undefined),
-];
+// const data = [
+//   createData("00:00", 0),
+//   createData("03:00", 300),
+//   createData("06:00", 600),
+//   createData("09:00", 800),
+//   createData("12:00", 1500),
+//   createData("15:00", 2000),
+//   createData("18:00", 2400),
+//   createData("21:00", 2400),
+//   createData("24:00", undefined),
+// ];
 
-export default function Chart() {
+export default function Chart({ sainVoiceList }) {
   const theme = useTheme();
+  let chartArr = [];
+  let vietNamD = Intl.NumberFormat("vi-VI");
+  let sortDate = sainVoiceList.sort(function (a, b) {
+    return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
+  });
+  const data = sortDate?.map((sainVoice) => {
+    return createData(
+      moment(sainVoice.RefDate).format("MMMM"),
+      parseInt(vietNamD.format(sainVoice.TotalAmount))
+    );
+  });
 
   return (
     <React.Fragment>
