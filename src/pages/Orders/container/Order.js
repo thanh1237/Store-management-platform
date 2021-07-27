@@ -238,7 +238,7 @@ export default function Order() {
     dispatch(orderActions.getOrders());
   }, [dispatch]);
 
-  return !rows ? (
+  return rows.length === 0 ? (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <CircularProgress />
     </div>
