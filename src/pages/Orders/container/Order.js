@@ -3,26 +3,50 @@ import { DataGrid } from "@material-ui/data-grid";
 import { useDispatch, useSelector } from "react-redux";
 import { orderActions, productActions, stockActions } from "redux/actions";
 import { useEffect } from "react";
-import { Button, CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 import moment from "moment";
 import { toast } from "react-toastify";
+import clsx from "clsx";
+
+const useStyles = makeStyles({
+  root: {
+    "& .super-app-theme--cell": {
+      color: "rgba(224, 183, 60, 0.55)",
+      fontWeight: "600",
+    },
+    "& .super-app.negative": {
+      color: "rgb(20,168,0)",
+      fontWeight: "600",
+    },
+    "& .super-app.zero": {
+      color: "rgba(224, 183, 60, 0.55)",
+      fontWeight: "600",
+    },
+    "& .super-app.positive": {
+      color: "#d47483",
+      fontWeight: "600",
+    },
+  },
+});
 
 export default function Order() {
   const dispatch = useDispatch();
+  const classes = useStyles();
   const currentUserId = useSelector((state) => state.auth.user._id);
   const listStock = useSelector((state) => state?.stock?.stocks?.stocks);
   const listOrder = useSelector((state) => state?.order?.orders?.orders);
 
   let nearestDate;
+  let rows = [];
 
   const stockByUser = listStock?.filter((stock) => {
     return stock.author === currentUserId;
   });
+  console.log(stockByUser);
 
   const datesToBeChecked = stockByUser?.map((stock) =>
     moment(stock.createdAt).format("YYYY-MM-DD")
   );
-
   const newestStockList = stockByUser?.filter((stock) => {
     let createdDate = moment(stock.createdAt).format("YYYY-MM-DD");
     const dateToCheckFor = moment().format("YYYY-MM-DD");
@@ -61,6 +85,17 @@ export default function Order() {
     return estimate;
   };
 
+  const getOrderNeeded = (params) => {
+    let orderNeeded =
+      Number(params.getValue(params.id, "real")) -
+      Number(params.getValue(params.id, "quantity")) +
+      Number(params.getValue(params.id, "orderQuantity"));
+    if (orderNeeded > 0) {
+      orderNeeded = `+${orderNeeded}`;
+    }
+    return orderNeeded;
+  };
+
   const updateRows = (value, id, field) => {
     const item = rows?.find((item) => item.id === id);
     item[field] = value;
@@ -80,7 +115,7 @@ export default function Order() {
     {
       field: "stockIn",
       headerName: "In",
-      width: 130,
+      width: 110,
       editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -89,7 +124,7 @@ export default function Order() {
     {
       field: "stockOut",
       headerName: "Out",
-      width: 130,
+      width: 110,
       editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -104,7 +139,30 @@ export default function Order() {
     {
       field: "real",
       headerName: "Real Stock",
-      width: 200,
+      width: 140,
+      editable: nearestDate !== moment().format("YYYY-MM-DD"),
+      renderCell: (params) => {
+        updateRows(params.value, params.row.id, params.field);
+      },
+    },
+    {
+      field: "orderNeeded",
+      headerName: "Order Needed",
+      width: 158,
+      valueGetter: getOrderNeeded,
+      cellClassName: (params) =>
+        clsx("super-app", {
+          negative: params.value > 0,
+          positive: params.value <= 0,
+        }),
+      renderCell: (params) => {
+        updateRows(params.value, params.row.id, params.field);
+      },
+    },
+    {
+      field: "orderQuantity",
+      headerName: "Order",
+      width: 120,
       editable: nearestDate !== moment().format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -121,8 +179,6 @@ export default function Order() {
     },
   ];
 
-  let rows = [];
-
   if (reduceList && nearestDate !== moment().format("YYYY-MM-DD")) {
     rows = reduceList?.map((row, idx) => {
       return {
@@ -134,19 +190,25 @@ export default function Order() {
         estimate: 0,
         real: 0,
         note: "",
+        quantity: row.product?.quantity,
+        orderNeeded: 0,
+        orderQuantity: 0,
       };
     });
-  } else {
+  } else if (reduceList && nearestDate === moment().format("YYYY-MM-DD")) {
     rows = reduceList?.map((row, idx) => {
       return {
         id: `${idx + 1}`,
         name: row.product?.name,
-        start: row?.real,
+        start: row?.start,
         stockIn: row?.stockIn,
         stockOut: row?.stockOut,
         estimate: row?.estimate,
         real: row?.real,
         note: row?.note,
+        quantity: row.product?.quantity,
+        orderNeeded: row.orderNeeded,
+        orderQuantity: row.orderQuantity,
       };
     });
   }
@@ -162,7 +224,6 @@ export default function Order() {
         product: productIdArr[idx],
       };
     });
-
     try {
       dispatch(stockActions.createStock(final));
       toast.success("Daily stock have been sent to Admin successfully");
@@ -182,7 +243,7 @@ export default function Order() {
       <CircularProgress />
     </div>
   ) : (
-    <div style={{ height: "100%", width: "100%" }} className="order">
+    <div style={{ height: "100%", width: "100%" }} className={classes.root}>
       <h2>
         Stock of {moment().format("DD-MM-YYYY")}
         <span>

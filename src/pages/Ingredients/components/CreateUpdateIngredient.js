@@ -67,6 +67,7 @@ export default function CreateUpdateIngredient(props) {
     type: "",
     unit: "",
     name: "",
+    supplier: "",
     capacity: "",
     capacityUnit: "ml",
     cost: "",
@@ -153,6 +154,7 @@ export default function CreateUpdateIngredient(props) {
       type: "",
       unit: "",
       name: "",
+      supplier: "",
       capacity: "",
       capacityUnit: "ml",
       price: "",
@@ -175,6 +177,7 @@ export default function CreateUpdateIngredient(props) {
         type: singleProduct.type,
         unit: singleProduct.unit,
         name: singleProduct.name,
+        supplier: singleProduct.supplier,
         cost: singleProduct.cost,
         capacity: singleProduct.capacity,
         capacityUnit: singleProduct.capacityUnit,
@@ -252,7 +255,7 @@ export default function CreateUpdateIngredient(props) {
                 disabled={form.type !== "Ingredient"}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
                 required
@@ -263,6 +266,19 @@ export default function CreateUpdateIngredient(props) {
                 autoComplete="name"
                 onChange={handleChange}
                 value={form.name}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="supplier"
+                label="Supplier"
+                name="supplier"
+                autoComplete="supplier"
+                onChange={handleChange}
+                value={form.supplier}
               />
             </Grid>
             <Grid item xs={12}>

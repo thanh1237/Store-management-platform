@@ -10,6 +10,29 @@ import { DataGrid } from "@material-ui/data-grid";
 import { useDispatch } from "react-redux";
 import { stockActions } from "redux/actions";
 import { toast } from "react-toastify";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+  root: {
+    "& .super-app-theme--cell": {
+      color: "rgba(224, 183, 60, 0.55)",
+      fontWeight: "600",
+    },
+    "& .super-app.negative": {
+      color: "rgb(20,168,0)",
+      fontWeight: "600",
+    },
+    "& .super-app.zero": {
+      color: "rgba(224, 183, 60, 0.55)",
+      fontWeight: "600",
+    },
+    "& .super-app.positive": {
+      color: "#d47483",
+      fontWeight: "600",
+    },
+  },
+});
 
 export default function OrderDialog(props) {
   const {
@@ -23,6 +46,7 @@ export default function OrderDialog(props) {
     orderId,
     setUpdated,
   } = props;
+  const classes = useStyles();
   const dispatch = useDispatch();
   const handleClose = () => {
     setOpen(false);
@@ -37,6 +61,17 @@ export default function OrderDialog(props) {
     return estimate;
   };
 
+  const getOrderNeeded = (params) => {
+    let orderNeeded =
+      Number(params.getValue(params.id, "real")) -
+      Number(params.getValue(params.id, "quantity")) +
+      Number(params.getValue(params.id, "orderQuantity"));
+    if (orderNeeded > 0) {
+      orderNeeded = `+${orderNeeded}`;
+    }
+    return orderNeeded;
+  };
+
   let defaultRows = stockListWithProduct?.map((row, idx) => {
     return {
       id: `${idx + 1}`,
@@ -47,6 +82,9 @@ export default function OrderDialog(props) {
       estimate: row.estimate,
       real: row.real,
       note: row.note,
+      orderNeeded: row.orderNeeded,
+      orderQuantity: row.orderQuantity,
+      quantity: row.product?.quantity,
     };
   });
 
@@ -96,7 +134,7 @@ export default function OrderDialog(props) {
     {
       field: "stockIn",
       headerName: "In",
-      width: 130,
+      width: 110,
       editable: true,
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -105,7 +143,7 @@ export default function OrderDialog(props) {
     {
       field: "stockOut",
       headerName: "Out",
-      width: 130,
+      width: 110,
       editable: true,
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -123,7 +161,30 @@ export default function OrderDialog(props) {
     {
       field: "real",
       headerName: "Real Stock",
-      width: 200,
+      width: 140,
+      editable: true,
+      renderCell: (params) => {
+        updateRows(params.value, params.row.id, params.field);
+      },
+    },
+    {
+      field: "orderNeeded",
+      headerName: "Order Needed",
+      width: 158,
+      valueGetter: getOrderNeeded,
+      cellClassName: (params) =>
+        clsx("super-app", {
+          negative: params.value > 0,
+          positive: params.value <= 0,
+        }),
+      renderCell: (params) => {
+        updateRows(params.value, params.row.id, params.field);
+      },
+    },
+    {
+      field: "orderQuantity",
+      headerName: "Order",
+      width: 120,
       editable: true,
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
@@ -141,7 +202,7 @@ export default function OrderDialog(props) {
   ];
   const ColumnFluidWidthGrid = () => {
     return (
-      <div style={{ width: "100%", height: "400px" }}>
+      <div style={{ width: "100%", height: "400px" }} className={classes.root}>
         <DataGrid
           rows={defaultRows}
           columns={columns}

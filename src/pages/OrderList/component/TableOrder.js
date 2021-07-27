@@ -76,8 +76,28 @@ export default function TableOrder({ stock, setUpdated }) {
     return { ...stock, product: returnedArr };
   });
 
-  function createData(name, start, stockIn, stockOut, estimate, real, note) {
-    return { name, start, stockIn, stockOut, estimate, real, note };
+  function createData(
+    name,
+    start,
+    stockIn,
+    stockOut,
+    estimate,
+    real,
+    orderNeeded,
+    orderQuantity,
+    note
+  ) {
+    return {
+      name,
+      start,
+      stockIn,
+      stockOut,
+      estimate,
+      real,
+      orderNeeded,
+      orderQuantity,
+      note,
+    };
   }
 
   const rows = stockListWithProduct?.map((e) => {
@@ -88,6 +108,8 @@ export default function TableOrder({ stock, setUpdated }) {
       e.stockOut,
       e.estimate,
       e.real,
+      e.orderNeeded,
+      e.orderQuantity,
       e.note
     );
   });
@@ -159,6 +181,8 @@ export default function TableOrder({ stock, setUpdated }) {
               <TableCell align="middle">Out</TableCell>
               <TableCell align="middle">Estimate</TableCell>
               <TableCell align="middle">Real</TableCell>
+              <TableCell align="middle">Order Needed</TableCell>
+              <TableCell align="middle">Order</TableCell>
               <TableCell align="middle">Note</TableCell>
             </TableRow>
           ) : null}
@@ -178,6 +202,8 @@ export default function TableOrder({ stock, setUpdated }) {
                   <TableCell align="middle">{row.stockOut}</TableCell>
                   <TableCell align="middle">{row.estimate}</TableCell>
                   <TableCell align="middle">{row.real}</TableCell>
+                  <TableCell align="middle">{row.orderNeeded}</TableCell>
+                  <TableCell align="middle">{row.orderQuantity}</TableCell>
                   <TableCell align="middle">{row.note}</TableCell>
                 </TableRow>
               );

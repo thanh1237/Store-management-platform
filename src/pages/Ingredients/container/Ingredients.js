@@ -51,6 +51,7 @@ const useRowStyles = makeStyles({
 function createData(
   id,
   name,
+  supplier,
   type,
   unit,
   quantity,
@@ -62,6 +63,7 @@ function createData(
   return {
     id,
     name,
+    supplier,
     type,
     unit,
     quantity,
@@ -102,6 +104,7 @@ function Row(props) {
           {row.id}
         </TableCell>
         <TableCell align="middle">{row.name}</TableCell>
+        <TableCell align="middle">{row.supplier}</TableCell>
         <TableCell align="middle">{row.type}</TableCell>
         <TableCell align="middle">{row.unit}</TableCell>
         <TableCell align="middle">{row.quantity}</TableCell>
@@ -144,6 +147,7 @@ export default function Ingredients() {
     return createData(
       index,
       product.name,
+      product.supplier,
       product.unit,
       product.capacity,
       `${vietNamD.format(product.cost)} đ`,
@@ -199,6 +203,9 @@ export default function Ingredients() {
               <TableCell style={{ color: "white" }}>Index</TableCell>
               <TableCell style={{ color: "white" }} align="middle">
                 Name
+              </TableCell>
+              <TableCell style={{ color: "white" }} align="middle">
+                Supplier
               </TableCell>
               <TableCell style={{ color: "white" }} align="middle">
                 Unit

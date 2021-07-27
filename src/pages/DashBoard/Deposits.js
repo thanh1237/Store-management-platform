@@ -60,7 +60,7 @@ export default function Deposits({ sainVoiceList }) {
                 ? "green"
                 : totalAmount - yesterdayTotalAmount < 0
                 ? "red"
-                : "yellow",
+                : "#F3C501",
           }}
         >
           {totalAmount - yesterdayTotalAmount > 0 ? (
