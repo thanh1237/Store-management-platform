@@ -30,18 +30,32 @@ function createData(time, amount) {
 
 export default function Chart({ sainVoiceList }) {
   const theme = useTheme();
-  let chartArr = [];
   let vietNamD = Intl.NumberFormat("vi-VI");
-  let sortDate = sainVoiceList.sort(function (a, b) {
-    return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
-  });
-  const data = sortDate?.map((sainVoice) => {
+  let sortDate = sainVoiceList
+    .sort(function (a, b) {
+      return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
+    })
+    .reduce((total, element) => {
+      let elementArray = total.map((element) =>
+        moment(element.RefDate).format("dd")
+      );
+      if (!elementArray.includes(moment(element.RefDate).format("dd"))) {
+        return [
+          ...total,
+          {
+            RefDate: element.RefDate,
+            TotalAmount: element.TotalAmount,
+          },
+        ];
+      }
+      return total;
+    }, []);
+  const data = sortDate?.map((sainVoice, idx) => {
     return createData(
-      moment(sainVoice.RefDate).format("MMMM"),
+      moment(sainVoice.RefDate).format("dd"),
       parseInt(vietNamD.format(sainVoice.TotalAmount))
     );
   });
-
   return (
     <React.Fragment>
       <Title style={{ color: "#2EAFFF" }}>Today</Title>

@@ -2,9 +2,7 @@ import * as types from "redux/constants/sainVoice.constants";
 const initialState = {
   sainVoice: [],
   totalPageNum: 1,
-  selectedBlog: null,
   loading: false,
-  singleProduct: null,
 };
 
 const sainVoiceReducer = (state = initialState, action) => {

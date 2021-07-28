@@ -285,7 +285,7 @@ export default function CreateUpdateIngredient(props) {
               <TextField
                 autoComplete="cost"
                 variant="outlined"
-                id="filled-number"
+                id="cost"
                 name="cost"
                 label="Cost"
                 type="number"
@@ -309,7 +309,7 @@ export default function CreateUpdateIngredient(props) {
               }}
             >
               <TextField
-                id="filled-number"
+                id="quantity"
                 name="quantity"
                 label="Daily Quantity Needed"
                 type="number"
@@ -334,7 +334,7 @@ export default function CreateUpdateIngredient(props) {
               }}
             >
               <TextField
-                id="filled-number"
+                id="stock"
                 name="stock"
                 label="Stock"
                 type="number"
@@ -358,7 +358,7 @@ export default function CreateUpdateIngredient(props) {
               <TextField
                 autoComplete="capacity"
                 variant="outlined"
-                id="filled-number"
+                id="capacity"
                 name="capacity"
                 label="Unit Capacity"
                 type="number"
@@ -372,7 +372,7 @@ export default function CreateUpdateIngredient(props) {
                 variant="outlined"
                 required
                 fullWidth
-                id="unit"
+                id="capacityUnit"
                 label="Unit Of Capacity Unit"
                 name="capacityUnit"
                 onChange={handleChange}
@@ -403,7 +403,7 @@ export default function CreateUpdateIngredient(props) {
               }}
             >
               <TextField
-                id="filled-number"
+                id="price"
                 name="price"
                 label="Price"
                 type="number"
@@ -486,7 +486,7 @@ export default function CreateUpdateIngredient(props) {
                       key={`${idx}` + 2 + `${field}`}
                       autoComplete="consumption"
                       variant="outlined"
-                      id="filled-number"
+                      id="consumption"
                       name="consumption"
                       label="Consumption"
                       InputLabelProps={{

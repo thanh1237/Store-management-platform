@@ -10,8 +10,23 @@
   flex-shrink: 1;
 }
 
+.revenue-num-container {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
 .compare {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
+}
+.deposit-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
