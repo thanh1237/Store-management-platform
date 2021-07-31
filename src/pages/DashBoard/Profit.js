@@ -34,19 +34,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Deposits({ sainVoiceList, cukcukOrderList }) {
+export default function Profit({ sainVoiceList, cukcukOrderList }) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const controller = useSelector((state) => state.control.obj);
   const cukcukDetailOrders = useSelector(
     (state) => state.cukcukOrder.singleOrder
   );
-  const [date, setDate] = useState();
   let totalAmount = 0;
   let yesterdayTotalAmount = 0;
   let totalAmountOfOrders = 0;
-  const handleDateChange = (e) => {
-    setDate(e.target.value);
-  };
 
   const cukcukOrderArr = cukcukOrderList?.filter((e) => {
     let today = moment().format("DD/MM/YYYY");
@@ -61,7 +58,6 @@ export default function Deposits({ sainVoiceList, cukcukOrderList }) {
     totalAmountOfOrders += order.TotalAmount;
     return totalAmountOfOrders;
   });
-  console.log(totalAmountOfOrders);
 
   const yesterdayArr = sainVoiceList?.filter((e) => {
     let yesterday = moment().subtract(1, "days").format("DD/MM/YYYY");
@@ -82,17 +78,13 @@ export default function Deposits({ sainVoiceList, cukcukOrderList }) {
   });
   let vietNamD = Intl.NumberFormat("vi-VI");
 
-  const inputProps = {
-    max: moment().format("YYYY-MM-DD"),
-  };
-
   useEffect(() => {
     dispatch(cukcukOrderActions.getSingleCukcukOrder(cukcukOrderIds));
   }, [dispatch, totalAmount, totalAmountOfOrders]);
 
   return (
     <React.Fragment>
-      <Title>Today Revenues</Title>
+      <Title>Profit By {controller ? controller.mode : null}</Title>
       <Typography component="p" variant="h3" className="revenue-container">
         <div className="revenue-num">{vietNamD.format(totalAmount)} đ</div>
         <div className="revenue-num-container">
@@ -136,46 +128,8 @@ export default function Deposits({ sainVoiceList, cukcukOrderList }) {
         className={classes.depositContext}
         component="p"
       >
-        On {moment().format("DD/MM/YYYY")}
+        On {controller.date}
       </Typography>
-      {/* <div class="deposit-buttons">
-        <Grid xs={12} sm={5}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Date
-          </Button>
-        </Grid>
-        <Grid xs={12} sm={5}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Month
-          </Button>
-        </Grid>
-        <Grid xs={12} sm={12}>
-          <TextField
-            fullWidth
-            inputProps={inputProps}
-            id="date"
-            label="Date"
-            type="date"
-            value={date}
-            defaultValue={moment().format("YYYY-MM-DD")}
-            className={classes.textField}
-            onChange={handleDateChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid>
-      </div> */}
     </React.Fragment>
   );
 }

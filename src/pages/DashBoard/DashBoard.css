@@ -30,3 +30,11 @@
   justify-content: space-between;
   flex-wrap: wrap;
 }
+
+.control-date {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  align-items: center;
+}

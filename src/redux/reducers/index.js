@@ -7,9 +7,11 @@ import stockReducer from "./stock.reducer";
 import orderReducer from "./order.reducer";
 import sainVoiceReducer from "./sainVoice.reducer";
 import cukcukOrderReducer from "./cukcukOrder.reducer";
+import controlReducer from "redux/reducers/control.reducer";
 
 export default combineReducers({
   auth: authReducer,
+  control: controlReducer,
   product: productReducer,
   route: routeReducer,
   user: userReducer,

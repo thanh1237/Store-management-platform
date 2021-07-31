@@ -12,8 +12,8 @@ const loginRequest =
       const res = await api.post("/auth/login", { email, password });
       dispatch({ type: types.LOGIN_SUCCESS, payload: res.data.data });
       const name = res.data.data.user.name;
+      await dispatch(loginCukcuk());
       toast.success(`Welcome back ${name}`);
-      dispatch(loginCukcuk());
     } catch (error) {
       console.log(error);
       dispatch({ type: types.LOGIN_FAILURE, payload: error });
