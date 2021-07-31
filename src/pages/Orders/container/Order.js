@@ -42,7 +42,6 @@ export default function Order() {
   const stockByUser = listStock?.filter((stock) => {
     return stock.author === currentUserId;
   });
-  console.log(stockByUser);
 
   const datesToBeChecked = stockByUser?.map((stock) =>
     moment(stock.createdAt).format("YYYY-MM-DD")

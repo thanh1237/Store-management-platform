@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import {
   LineChart,
@@ -10,6 +10,8 @@ import {
 } from "recharts";
 import Title from "./Title";
 import moment from "moment";
+import { useDispatch, useSelector } from "react-redux";
+import { controlActions } from "redux/actions/control.action";
 
 // Generate Sales Data
 function createData(time, amount) {
@@ -31,37 +33,85 @@ function createData(time, amount) {
 export default function Chart({ sainVoiceList }) {
   const theme = useTheme();
   let vietNamD = Intl.NumberFormat("vi-VI");
+  const control = useSelector((state) => state.control.obj);
+
   let sortDate = sainVoiceList
     .sort(function (a, b) {
       return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
     })
-    .reduce((total, element) => {
-      let elementArray = total.map((element) =>
-        moment(element.RefDate).format("dd")
-      );
-      if (!elementArray.includes(moment(element.RefDate).format("dd"))) {
-        return [
-          ...total,
-          {
-            RefDate: element.RefDate,
-            TotalAmount: element.TotalAmount,
-          },
-        ];
+    .filter((el) => {
+      if (control.mode === "Date") {
+        return moment(el.RefDate).format("M") === moment().format("M");
+      } else {
+        return moment(el.RefDate).format("YYYY") === moment().format("YYYY");
       }
-      return total;
-    }, []);
-  const data = sortDate?.map((sainVoice, idx) => {
+    });
+
+  const reduceDateArr = sortDate.reduce((total, element) => {
+    let elementArray = total.map((element) =>
+      moment(element.RefDate).format("L")
+    );
+    if (!elementArray.includes(moment(element.RefDate).format("L"))) {
+      return [
+        ...total,
+        {
+          RefDate: element.RefDate,
+          TotalAmount: element.TotalAmount,
+        },
+      ];
+    } else {
+      const index = total.findIndex(
+        (e) =>
+          moment(e.RefDate).format("L") === moment(element.RefDate).format("L")
+      );
+      total[index].TotalAmount += element.TotalAmount;
+    }
+    return total;
+  }, []);
+
+  const reduceMonthArr = sortDate.reduce((total, element) => {
+    let elementArray = total.map((element) =>
+      moment(element.RefDate).format("MMM")
+    );
+    if (!elementArray.includes(moment(element.RefDate).format("MMM"))) {
+      return [
+        ...total,
+        {
+          RefDate: element.RefDate,
+          TotalAmount: element.TotalAmount,
+        },
+      ];
+    } else {
+      const index = total.findIndex(
+        (e) =>
+          moment(e.RefDate).format("MMM") ===
+          moment(element.RefDate).format("MMM")
+      );
+      total[index].TotalAmount += element.TotalAmount;
+    }
+    return total;
+  }, []);
+
+  const dateData = reduceDateArr?.map((sainVoice) => {
     return createData(
       moment(sainVoice.RefDate).format("dd"),
       parseInt(vietNamD.format(sainVoice.TotalAmount))
     );
   });
+
+  const monthData = reduceMonthArr?.map((sainVoice) => {
+    return createData(
+      moment(sainVoice.RefDate).format("MMM"),
+      parseInt(vietNamD.format(sainVoice.TotalAmount))
+    );
+  });
+
   return (
     <React.Fragment>
       <Title style={{ color: "#2EAFFF" }}>Today</Title>
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={control.mode === "Date" ? dateData : monthData}
           margin={{
             top: 16,
             right: 16,
@@ -87,7 +137,7 @@ export default function Chart({ sainVoiceList }) {
             type="monotone"
             dataKey="amount"
             stroke={theme.palette.primary.main}
-            dot={false}
+            dot={true}
           />
         </LineChart>
       </ResponsiveContainer>
