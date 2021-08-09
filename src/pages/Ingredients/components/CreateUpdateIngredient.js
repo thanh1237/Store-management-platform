@@ -69,7 +69,7 @@ export default function CreateUpdateIngredient(props) {
     name: "",
     supplier: "",
     capacity: "",
-    capacityUnit: "ml",
+    capacityUnit: "",
     cost: "",
     price: "",
     ingredients: [
@@ -377,7 +377,6 @@ export default function CreateUpdateIngredient(props) {
                 name="capacityUnit"
                 onChange={handleChange}
                 value={form.capacityUnit}
-                disabled={true}
                 style={{
                   display:
                     form.type === "Beer" ||

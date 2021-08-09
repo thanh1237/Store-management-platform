@@ -7,6 +7,7 @@ import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 import moment from "moment";
 import { toast } from "react-toastify";
 import clsx from "clsx";
+import { controlActions } from "redux/actions/control.action";
 
 const useStyles = makeStyles({
   root: {
@@ -35,9 +36,11 @@ export default function Order() {
   const currentUserId = useSelector((state) => state.auth.user._id);
   const listStock = useSelector((state) => state?.stock?.stocks?.stocks);
   const listOrder = useSelector((state) => state?.order?.orders?.orders);
+  const control = useSelector((state) => state.control.obj);
 
   let nearestDate;
   let rows = [];
+  const controlledDate = control.date;
 
   const stockByUser = listStock?.filter((stock) => {
     return stock.author === currentUserId;
@@ -46,14 +49,15 @@ export default function Order() {
   const datesToBeChecked = stockByUser?.map((stock) =>
     moment(stock.createdAt).format("YYYY-MM-DD")
   );
+
   const newestStockList = stockByUser?.filter((stock) => {
     let createdDate = moment(stock.createdAt).format("YYYY-MM-DD");
-    const dateToCheckFor = moment().format("YYYY-MM-DD");
+    const dateToCheckFor = moment(controlledDate).format("YYYY-MM-DD");
     datesToBeChecked.forEach((date) => {
       let diff = moment(date).diff(moment(dateToCheckFor), "days");
       let diff2 = moment(createdDate).diff(moment(dateToCheckFor), "days");
       if (diff === 0) {
-        return (nearestDate = moment().format("YYYY-MM-DD"));
+        return (nearestDate = moment(controlledDate).format("YYYY-MM-DD"));
       } else if (diff < 0 && diff === diff2 && !nearestDate) {
         nearestDate = date;
       }
@@ -107,6 +111,11 @@ export default function Order() {
       width: 200,
     },
     {
+      field: "supplier",
+      headerName: "Supplier",
+      width: 190,
+    },
+    {
       field: "start",
       headerName: "Start",
       width: 130,
@@ -115,7 +124,9 @@ export default function Order() {
       field: "stockIn",
       headerName: "In",
       width: 110,
-      editable: nearestDate !== moment().format("YYYY-MM-DD"),
+      editable:
+        nearestDate !== moment().format("YYYY-MM-DD") &&
+        nearestDate !== moment(controlledDate).format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -124,7 +135,9 @@ export default function Order() {
       field: "stockOut",
       headerName: "Out",
       width: 110,
-      editable: nearestDate !== moment().format("YYYY-MM-DD"),
+      editable:
+        nearestDate !== moment().format("YYYY-MM-DD") &&
+        nearestDate !== moment(controlledDate).format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -139,7 +152,9 @@ export default function Order() {
       field: "real",
       headerName: "Real Stock",
       width: 140,
-      editable: nearestDate !== moment().format("YYYY-MM-DD"),
+      editable:
+        nearestDate !== moment().format("YYYY-MM-DD") &&
+        nearestDate !== moment(controlledDate).format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -162,7 +177,9 @@ export default function Order() {
       field: "orderQuantity",
       headerName: "Order",
       width: 120,
-      editable: nearestDate !== moment().format("YYYY-MM-DD"),
+      editable:
+        nearestDate !== moment().format("YYYY-MM-DD") &&
+        nearestDate !== moment(controlledDate).format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
@@ -171,18 +188,24 @@ export default function Order() {
       field: "note",
       headerName: "Note",
       width: 300,
-      editable: nearestDate !== moment().format("YYYY-MM-DD"),
+      editable:
+        nearestDate !== moment().format("YYYY-MM-DD") &&
+        nearestDate !== moment(controlledDate).format("YYYY-MM-DD"),
       renderCell: (params) => {
         updateRows(params.value, params.row.id, params.field);
       },
     },
   ];
 
-  if (reduceList && nearestDate !== moment().format("YYYY-MM-DD")) {
+  if (
+    reduceList &&
+    nearestDate !== moment(controlledDate).format("YYYY-MM-DD")
+  ) {
     rows = reduceList?.map((row, idx) => {
       return {
         id: `${idx + 1}`,
         name: row.product?.name,
+        supplier: row.product.supplier,
         start: row?.real,
         stockIn: 0,
         stockOut: 0,
@@ -194,11 +217,15 @@ export default function Order() {
         orderQuantity: 0,
       };
     });
-  } else if (reduceList && nearestDate === moment().format("YYYY-MM-DD")) {
+  } else if (
+    reduceList &&
+    nearestDate === moment(controlledDate).format("YYYY-MM-DD")
+  ) {
     rows = reduceList?.map((row, idx) => {
       return {
         id: `${idx + 1}`,
         name: row.product?.name,
+        supplier: row.product.supplier,
         start: row?.start,
         stockIn: row?.stockIn,
         stockOut: row?.stockOut,
@@ -244,9 +271,10 @@ export default function Order() {
   ) : (
     <div style={{ height: "100%", width: "100%" }} className={classes.root}>
       <h2>
-        Stock of {moment().format("DD-MM-YYYY")}
+        Stock of {moment(controlledDate).format("DD-MM-YYYY")}
         <span>
-          {nearestDate === moment().format("YYYY-MM-DD")
+          {nearestDate === moment().format("YYYY-MM-DD") ||
+          nearestDate === moment(controlledDate).format("YYYY-MM-DD")
             ? ` (Read Only)`
             : ` (Not Submitted yet)`}
         </span>
@@ -259,6 +287,12 @@ export default function Order() {
       />
       <div className="button-container">
         <Button
+          disabled={
+            nearestDate !== moment().format("YYYY-MM-DD") &&
+            nearestDate !== moment(controlledDate).format("YYYY-MM-DD")
+              ? false
+              : true
+          }
           className="order-button"
           variant="contained"
           color="primary"
@@ -267,9 +301,6 @@ export default function Order() {
               nearestDate !== moment().format("YYYY-MM-DD") ? "#2EC0FF" : null,
           }}
           onClick={handleClickButton}
-          disabled={
-            nearestDate !== moment().format("YYYY-MM-DD") ? false : true
-          }
         >
           Submit Order
         </Button>
@@ -277,7 +308,10 @@ export default function Order() {
       <h5
         style={{
           display:
-            nearestDate !== moment().format("YYYY-MM-DD") ? "none" : null,
+            nearestDate !== moment().format("YYYY-MM-DD") &&
+            nearestDate !== moment(controlledDate).format("YYYY-MM-DD")
+              ? "none"
+              : null,
         }}
       >
         Today stock has been created. Please come back tomorrow

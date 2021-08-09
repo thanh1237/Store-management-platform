@@ -161,8 +161,8 @@ export default function CollapsibleTable() {
     dispatch(productActions.deleteProduct(id));
   };
 
-  const handleOpen = async (id) => {
-    await dispatch(productActions.getSingleProduct(id));
+  const handleOpen = (id) => {
+    dispatch(productActions.getSingleProduct(id));
     setOpen(true);
   };
 

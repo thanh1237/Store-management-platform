@@ -43,6 +43,8 @@ import "./DashBoard.css";
 import { cukcukOrderActions, sainVoiceActions } from "redux/actions";
 import ControlBoard from "pages/DashBoard/ControlBoard";
 import Profit from "pages/DashBoard/Profit";
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+import SupplierIndex from "pages/Supplier/SupplierIndex";
 
 function Copyright() {
   return (
@@ -817,6 +819,18 @@ export default function Dashboard() {
                 <ListItemText primary="Products" />
               </ListItem>
               <ListItem
+                style={{ display: currentUserRole !== "Admin" ? "none" : null }}
+                button
+                onClick={() => {
+                  handleShow("Ingredients");
+                }}
+              >
+                <ListItemIcon>
+                  <RestaurantMenuOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Ingredients" />
+              </ListItem>
+              <ListItem
                 button
                 style={{ display: currentUserRole !== "Admin" ? "none" : null }}
                 onClick={() => {
@@ -829,16 +843,15 @@ export default function Dashboard() {
                 <ListItemText primary="Order List" />
               </ListItem>
               <ListItem
-                style={{ display: currentUserRole !== "Admin" ? "none" : null }}
                 button
                 onClick={() => {
-                  handleShow("Ingredients");
+                  handleShow("Suppliers");
                 }}
               >
                 <ListItemIcon>
-                  <RestaurantMenuOutlinedIcon />
+                  <ContactMailIcon />
                 </ListItemIcon>
-                <ListItemText primary="Ingredients" />
+                <ListItemText primary="Suppliers" />
               </ListItem>
             </div>
           }
@@ -888,6 +901,8 @@ export default function Dashboard() {
               <h1 style={{ color: "#2EC0FF" }}>Stock List</h1>
             ) : show === "Ingredients" ? (
               <h1 style={{ color: "#2EC0FF" }}>Ingredients Management</h1>
+            ) : show === "Suppliers" ? (
+              <h1 style={{ color: "#2EC0FF" }}>Suppliers Management</h1>
             ) : null}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -901,6 +916,8 @@ export default function Dashboard() {
                   <OrderList />
                 ) : show === "Ingredients" ? (
                   <IngredientsIndex />
+                ) : show === "Suppliers" ? (
+                  <SupplierIndex />
                 ) : (
                   "Please select from side menu"
                 )}

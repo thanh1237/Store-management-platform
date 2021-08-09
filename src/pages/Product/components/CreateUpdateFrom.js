@@ -71,7 +71,7 @@ export default function CreateUpdateFrom(props) {
     cost: "",
     price: "",
     capacity: "",
-    capacityUnit: "ml",
+    capacityUnit: "",
     ingredients: [
       {
         ingredient: "",

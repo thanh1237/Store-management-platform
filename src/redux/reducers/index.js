@@ -8,6 +8,7 @@ import orderReducer from "./order.reducer";
 import sainVoiceReducer from "./sainVoice.reducer";
 import cukcukOrderReducer from "./cukcukOrder.reducer";
 import controlReducer from "redux/reducers/control.reducer";
+import supplierReducer from "redux/reducers/supplier.reducer";
 
 export default combineReducers({
   auth: authReducer,
@@ -19,4 +20,5 @@ export default combineReducers({
   order: orderReducer,
   sainVoice: sainVoiceReducer,
   cukcukOrder: cukcukOrderReducer,
+  supplier: supplierReducer,
 });

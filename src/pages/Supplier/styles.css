@@ -1,0 +1,10 @@
+.supp-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.MuiTableCell-root {
+  text-align: center !important;
+}
