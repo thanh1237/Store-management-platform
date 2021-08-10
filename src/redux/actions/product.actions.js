@@ -12,6 +12,7 @@ const getProducts = () => async (dispatch) => {
     dispatch({ type: types.GET_PRODUCTS_FAILURE, payload: error });
   }
 };
+
 const getSingleProduct = (id) => async (dispatch) => {
   dispatch({ type: types.GET_SINGLE_PRODUCT_REQUEST, payload: null });
   try {
@@ -24,6 +25,7 @@ const getSingleProduct = (id) => async (dispatch) => {
     dispatch({ type: types.GET_SINGLE_PRODUCT_FAILURE, payload: error });
   }
 };
+
 const createProducts =
   ({
     type,

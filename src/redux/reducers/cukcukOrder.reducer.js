@@ -4,6 +4,7 @@ const initialState = {
   totalPageNum: 1,
   loading: false,
   singleOrder: null,
+  yesterday: null,
 };
 
 const cukcukOrderReducer = (state = initialState, action) => {
@@ -26,6 +27,13 @@ const cukcukOrderReducer = (state = initialState, action) => {
     case types.GET_SINGLE_CUKCUK_ORDER_SUCCESS:
       return { ...state, singleOrder: payload, loading: false };
     case types.GET_SINGLE_CUKCUK_ORDER_FAILURE:
+      return { ...state, loading: true };
+
+    case types.GET_YES_SINGLE_CUKCUK_ORDER_REQUEST:
+      return { ...state, loading: true };
+    case types.GET_YES_SINGLE_CUKCUK_ORDER_SUCCESS:
+      return { ...state, yesterday: payload, loading: false };
+    case types.GET_YES_SINGLE_CUKCUK_ORDER_FAILURE:
       return { ...state, loading: true };
 
     default:

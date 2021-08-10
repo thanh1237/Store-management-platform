@@ -4,22 +4,6 @@ import cukcukApi from "../api-cukcuk";
 import { toast } from "react-toastify";
 import crypto from "crypto";
 
-const loginRequest =
-  ({ email, password }) =>
-  async (dispatch) => {
-    dispatch({ type: types.LOGIN_REQUEST, payload: null });
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      dispatch({ type: types.LOGIN_SUCCESS, payload: res.data.data });
-      const name = res.data.data.user.name;
-      await dispatch(loginCukcuk());
-      toast.success(`Welcome back ${name}`);
-    } catch (error) {
-      console.log(error);
-      dispatch({ type: types.LOGIN_FAILURE, payload: error });
-    }
-  };
-
 const loginCukcuk = () => async (dispatch) => {
   dispatch({ type: types.LOGIN_CUKCUK_REQUEST, payload: null });
   try {
@@ -46,6 +30,22 @@ const loginCukcuk = () => async (dispatch) => {
     dispatch({ type: types.LOGIN_CUKCUK_FAILURE, payload: error });
   }
 };
+
+const loginRequest =
+  ({ email, password }) =>
+  async (dispatch) => {
+    dispatch({ type: types.LOGIN_REQUEST, payload: null });
+    try {
+      const res = await api.post("/auth/login", { email, password });
+      dispatch({ type: types.LOGIN_SUCCESS, payload: res.data.data });
+      const name = res.data.data.user.name;
+      await dispatch(loginCukcuk());
+      toast.success(`Welcome back ${name}`);
+    } catch (error) {
+      console.log(error);
+      dispatch({ type: types.LOGIN_FAILURE, payload: error });
+    }
+  };
 
 const getCurrentUser = (accessToken) => async (dispatch) => {
   dispatch({ type: types.GET_CURRENT_USER_REQUEST, payload: null });

@@ -18,25 +18,17 @@ const getCukcukOrders = () => async (dispatch) => {
   }
 };
 
-const getSingleCukcukOrder = (idArr) => async (dispatch) => {
+const getSingleCukcukOrder = (ids) => async (dispatch) => {
+  let orderDetails = [];
   dispatch({ type: types.GET_SINGLE_CUKCUK_ORDER_REQUEST, payload: null });
-  let orderArr = [];
   try {
-    idArr.forEach(async (id) => {
-      const res = await cukcukApi.get(
-        `/v1/orders/${id}`
-        // , {
-        //   Page: 1,
-        //   Limit: 100,
-        //   BranchId: null,
-        //   HaveCustomer: true,
-        // }
-      );
-      orderArr.push(res.data.Data);
+    ids.forEach(async (id) => {
+      const res = await cukcukApi.get(`/v1/orders/${id}`);
+      await orderDetails.push(res.data.Data);
     });
     dispatch({
       type: types.GET_SINGLE_CUKCUK_ORDER_SUCCESS,
-      payload: orderArr,
+      payload: orderDetails,
     });
   } catch (error) {
     toast.error("Get Single Order Failed");
@@ -44,7 +36,29 @@ const getSingleCukcukOrder = (idArr) => async (dispatch) => {
   }
 };
 
+const getYesSingleCukcukOrder = (ids) => async (dispatch) => {
+  let orderDetails = [];
+  dispatch({ type: types.GET_YES_SINGLE_CUKCUK_ORDER_REQUEST, payload: null });
+  try {
+    ids.forEach(async (id) => {
+      const res = await cukcukApi.get(`/v1/orders/${id}`);
+      await orderDetails.push(res.data.Data);
+    });
+    dispatch({
+      type: types.GET_YES_SINGLE_CUKCUK_ORDER_SUCCESS,
+      payload: orderDetails,
+    });
+  } catch (error) {
+    toast.error("Get Single Order Failed");
+    dispatch({
+      type: types.GET_YES_SINGLE_CUKCUK_ORDER_FAILURE,
+      payload: error,
+    });
+  }
+};
+
 export const cukcukOrderActions = {
   getCukcukOrders,
   getSingleCukcukOrder,
+  getYesSingleCukcukOrder,
 };
