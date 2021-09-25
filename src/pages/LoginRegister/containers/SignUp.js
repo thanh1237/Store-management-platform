@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useDispatch } from "react-redux";
 import authActions from "redux/actions/auth.actions";
-import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { FormControl } from "@material-ui/core";
 import { userActions } from "redux/actions";
 
 function Copyright() {
@@ -53,7 +53,6 @@ export default function SignUp(props) {
   const { handleClose } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [role, setRole] = React.useState("");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -62,9 +61,6 @@ export default function SignUp(props) {
     role: "",
   });
 
-  const handleChangeRole = (event) => {
-    setRole(event.target.value);
-  };
   const handleChange = (e) => {
     e.preventDefault();
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,7 +68,8 @@ export default function SignUp(props) {
 
   const handleCreateAccount = (e) => {
     e.preventDefault();
-    dispatch(authActions.register({ ...form, role }));
+    const uppRole = form.role.charAt(0).toUpperCase() + form.role.slice(1);
+    dispatch(authActions.register({ ...form, role: uppRole }));
     dispatch(userActions.getUsers());
     handleClose();
   };
@@ -144,22 +141,16 @@ export default function SignUp(props) {
                 className={classes.formControl}
                 fullWidth
               >
-                <InputLabel id="demo-simple-select-outlined-label">
-                  Role
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-outlined-label"
-                  id="demo-simple-select-outlined"
-                  value={role}
-                  onChange={handleChangeRole}
-                  label="Role"
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
                   name="role"
-                >
-                  <MenuItem value={"Rooftop"}>Rooftop</MenuItem>
-                  <MenuItem value={"Admin"}>Admin</MenuItem>
-                  <MenuItem value={"Rock"}>Rock</MenuItem>
-                  <MenuItem value={"Rap"}>Rap</MenuItem>
-                </Select>
+                  label="Role"
+                  id="role"
+                  autoComplete="current-password"
+                  onChange={handleChange}
+                />
               </FormControl>
             </Grid>
           </Grid>

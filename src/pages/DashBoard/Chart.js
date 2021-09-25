@@ -10,33 +10,21 @@ import {
 } from "recharts";
 import Title from "./Title";
 import moment from "moment";
-import { useDispatch, useSelector } from "react-redux";
-import { controlActions } from "redux/actions/control.action";
+import { useSelector } from "react-redux";
 
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
 }
 
-// const data = [
-//   createData("00:00", 0),
-//   createData("03:00", 300),
-//   createData("06:00", 600),
-//   createData("09:00", 800),
-//   createData("12:00", 1500),
-//   createData("15:00", 2000),
-//   createData("18:00", 2400),
-//   createData("21:00", 2400),
-//   createData("24:00", undefined),
-// ];
-
-export default function Chart({ sainVoiceList }) {
+export default function Chart() {
   const theme = useTheme();
   let vietNamD = Intl.NumberFormat("vi-VI");
+  const orderList = useSelector((state) => state.cukcukOrder.orders);
   const control = useSelector((state) => state.control.obj);
 
-  let sortDate = sainVoiceList
-    .sort(function (a, b) {
+  let sortDate = orderList
+    ?.sort(function (a, b) {
       return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
     })
     .filter((el) => {
@@ -55,7 +43,7 @@ export default function Chart({ sainVoiceList }) {
       return [
         ...total,
         {
-          RefDate: element.RefDate,
+          RefDate: element.Date,
           TotalAmount: element.TotalAmount,
         },
       ];
@@ -77,7 +65,7 @@ export default function Chart({ sainVoiceList }) {
       return [
         ...total,
         {
-          RefDate: element.RefDate,
+          RefDate: element.Date,
           TotalAmount: element.TotalAmount,
         },
       ];
@@ -94,7 +82,7 @@ export default function Chart({ sainVoiceList }) {
 
   const dateData = reduceDateArr?.map((sainVoice) => {
     return createData(
-      moment(sainVoice.RefDate).format("dd"),
+      moment(sainVoice.RefDate).format("DD/MM"),
       parseInt(vietNamD.format(sainVoice.TotalAmount))
     );
   });

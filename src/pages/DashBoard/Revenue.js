@@ -47,14 +47,14 @@ export default function Revenue({ sainVoiceList }) {
     let yesterday = moment(controller.date)
       .subtract(1, "days")
       .format("DD/MM/YYYY");
-    return moment(e.RefDate).format("DD/MM/YYYY") === yesterday;
+    return moment(e.Date).format("DD/MM/YYYY") === yesterday;
   });
 
   const lastMonthArr = sainVoiceList?.filter((e) => {
     let lastMonth = moment(controller.date)
       .subtract(1, "months")
       .format("MM/YYYY");
-    return moment(e.RefDate).format("MM/YYYY") === lastMonth;
+    return moment(e.Date).format("MM/YYYY") === lastMonth;
   });
 
   yesterdayArr?.map((sainVoice) => {
@@ -67,12 +67,12 @@ export default function Revenue({ sainVoiceList }) {
 
   const todayArr = sainVoiceList?.filter((e) => {
     let today = moment(controller.date).format("DD/MM/YYYY");
-    return moment(e.RefDate).format("DD/MM/YYYY") === today;
+    return moment(e.Date).format("DD/MM/YYYY") === today;
   });
 
   const thisMonthArr = sainVoiceList?.filter((e) => {
     let thisMonth = moment(controller.date).format("MM/YYYY");
-    return moment(e.RefDate).format("MM/YYYY") === thisMonth;
+    return moment(e.Date).format("MM/YYYY") === thisMonth;
   });
 
   todayArr?.map((sainVoice) => {
@@ -148,18 +148,6 @@ export default function Revenue({ sainVoiceList }) {
               đ
             </Typography>
           )}
-
-          {/* <Typography component="p" className="revenue-container compare">
-            Profit:{" "}
-            <span
-              style={{
-                color: "green",
-              }}
-            >
-              <ArrowDropUpOutlinedIcon fontSize="small" />
-              {vietNamD.format(totalAmountOfOrders)} đ
-            </span>
-          </Typography> */}
         </div>
       </Typography>
       <Typography
@@ -169,44 +157,6 @@ export default function Revenue({ sainVoiceList }) {
       >
         On {controller.date}
       </Typography>
-      {/* <div class="deposit-buttons">
-        <Grid xs={12} sm={5}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Date
-          </Button>
-        </Grid>
-        <Grid xs={12} sm={5}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Month
-          </Button>
-        </Grid>
-        <Grid xs={12} sm={12}>
-          <TextField
-            fullWidth
-            inputProps={inputProps}
-            id="date"
-            label="Date"
-            type="date"
-            value={date}
-            defaultValue={moment().format("YYYY-MM-DD")}
-            className={classes.textField}
-            onChange={handleDateChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid>
-      </div> */}
     </React.Fragment>
   );
 }

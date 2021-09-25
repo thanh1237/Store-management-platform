@@ -7,7 +7,6 @@ import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 import moment from "moment";
 import { toast } from "react-toastify";
 import clsx from "clsx";
-import { controlActions } from "redux/actions/control.action";
 
 const useStyles = makeStyles({
   root: {
@@ -37,7 +36,6 @@ export default function Order() {
   const listStock = useSelector((state) => state?.stock?.stocks?.stocks);
   const listOrder = useSelector((state) => state?.order?.orders?.orders);
   const control = useSelector((state) => state.control.obj);
-
   let nearestDate;
   let rows = [];
   const controlledDate = control.date;
@@ -46,30 +44,58 @@ export default function Order() {
     return stock.author === currentUserId;
   });
 
-  const datesToBeChecked = stockByUser?.map((stock) =>
-    moment(stock.createdAt).format("YYYY-MM-DD")
-  );
-
-  const newestStockList = stockByUser?.filter((stock) => {
-    let createdDate = moment(stock.createdAt).format("YYYY-MM-DD");
-    const dateToCheckFor = moment(controlledDate).format("YYYY-MM-DD");
-    datesToBeChecked.forEach((date) => {
-      let diff = moment(date).diff(moment(dateToCheckFor), "days");
-      let diff2 = moment(createdDate).diff(moment(dateToCheckFor), "days");
-      if (diff === 0) {
-        return (nearestDate = moment(controlledDate).format("YYYY-MM-DD"));
-      } else if (diff < 0 && diff === diff2 && !nearestDate) {
-        nearestDate = date;
+  const sortedArr = stockByUser?.reduce((total, product) => {
+    let container = [];
+    let tableArray = total.map((pro) => pro?.product.name);
+    if (!tableArray.includes(product.product.name)) {
+      return [...total, product];
+    } else {
+      let findDup = total?.find((e) => {
+        return e.product?.name === product.product?.name;
+      });
+      container.push(findDup);
+      container.push(product);
+      const datesToBeChecked = container?.map((stock) =>
+        moment(stock.createdAt).format("YYYY-MM-DD")
+      );
+      const newestStockList = container?.filter((stock) => {
+        let createdDate = moment(stock?.createdAt).format("YYYY-MM-DD");
+        const dateToCheckFor = moment(controlledDate).format("YYYY-MM-DD");
+        datesToBeChecked.forEach((date) => {
+          let diff = moment(date).diff(moment(dateToCheckFor), "days");
+          if (diff < 0) {
+            if (nearestDate) {
+              if (moment(date).diff(moment(nearestDate), "days") > 0) {
+                nearestDate = date;
+                return nearestDate;
+              }
+            } else {
+              nearestDate = date;
+              return nearestDate;
+            }
+          } else {
+            nearestDate = date;
+            return nearestDate;
+          }
+        });
+        return createdDate === moment(nearestDate).format("YYYY-MM-DD");
+      });
+      for (let i = 0; i < total.length; i++) {
+        if (total[i]?.product.createdAt === product?.product.createdAt) {
+          total.splice(i, 1);
+          i--;
+        }
       }
-    });
-    return createdDate === nearestDate;
-  });
 
-  const bottle = newestStockList?.filter(
+      return [...total, newestStockList[0]];
+    }
+  }, []);
+
+  const bottle = sortedArr?.filter(
     (e) =>
-      e.product?.type === "Alcohol" ||
-      e.product?.type === "Beer" ||
-      e.product?.type === "Ingredient"
+      e?.product?.type === "Alcohol" ||
+      e?.product?.type === "Beer" ||
+      e?.product?.type === "Ingredient"
   );
 
   const reduceList = bottle?.reduce((total, product) => {

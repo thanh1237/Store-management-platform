@@ -48,6 +48,7 @@ export default function OrderDialog(props) {
   } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
+
   const handleClose = () => {
     setOpen(false);
     setUpdated(false);
@@ -200,6 +201,7 @@ export default function OrderDialog(props) {
       },
     },
   ];
+
   const ColumnFluidWidthGrid = () => {
     return (
       <div style={{ width: "100%", height: "400px" }} className={classes.root}>

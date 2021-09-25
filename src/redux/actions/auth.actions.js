@@ -39,7 +39,7 @@ const loginRequest =
       const res = await api.post("/auth/login", { email, password });
       dispatch({ type: types.LOGIN_SUCCESS, payload: res.data.data });
       const name = res.data.data.user.name;
-      await dispatch(loginCukcuk());
+      dispatch(loginCukcuk());
       toast.success(`Welcome back ${name}`);
     } catch (error) {
       console.log(error);

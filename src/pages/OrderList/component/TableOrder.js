@@ -42,7 +42,6 @@ export default function TableOrder({ stock, setUpdated }) {
   const authorId = stock?.author._id;
   const role = stock?.author.role;
   const orderId = stock._id;
-
   let nearestDate;
 
   const newestStockList = stockList?.filter((stock) => {

@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SuppModal({ listSupp }) {
+export default function SuppModal({ listSupp, role }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
@@ -42,6 +42,7 @@ export default function SuppModal({ listSupp }) {
         style={{ backgroundColor: "#2EC0FF", color: "white" }}
         color="primary"
         onClick={handleOpen}
+        disabled={role !== "Admin"}
       >
         Add new supplier
       </Button>

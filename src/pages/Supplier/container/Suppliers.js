@@ -101,6 +101,7 @@ export default function Suppliers() {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.supplier.loading);
   const listSupp = useSelector((state) => state.supplier.suppliers.suppliers);
+  const role = useSelector((state) => state.auth.user.role);
   const singleSupp = useSelector((state) => state.supplier?.singleSupplier);
   const [open, setOpen] = React.useState(false);
 
@@ -127,6 +128,7 @@ export default function Suppliers() {
 
       <div className="actions">
         <Button
+          disabled={role !== "Admin"}
           variant="contained"
           style={{ backgroundColor: "#2EC0FF", color: "white" }}
           onClick={() => handleOpen(supp._id)}
@@ -153,7 +155,7 @@ export default function Suppliers() {
             />
           </Fade>
         </Modal>
-        <PopOver handleDelete={deleteSupp} id={supp._id} />
+        <PopOver role={role} handleDelete={deleteSupp} id={supp._id} />
       </div>
     );
   });
@@ -167,7 +169,7 @@ export default function Suppliers() {
     </div>
   ) : (
     <div className="create-button">
-      <SuppModal listSupp={listSupp} />
+      <SuppModal listSupp={listSupp} role={role} />
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead style={{ backgroundColor: "black", width: "100%" }}>

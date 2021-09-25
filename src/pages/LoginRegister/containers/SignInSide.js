@@ -15,6 +15,7 @@ import authActions from "redux/actions/auth.actions";
 import { Redirect, useHistory } from "react-router";
 import { routeActions } from "redux/actions";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import logo from "../../../images/logo.png";
 
 function Copyright() {
   return (
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
+    backgroundImage: `url(${logo})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"

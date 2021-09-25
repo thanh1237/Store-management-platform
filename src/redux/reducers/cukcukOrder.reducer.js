@@ -25,7 +25,7 @@ const cukcukOrderReducer = (state = initialState, action) => {
     case types.GET_SINGLE_CUKCUK_ORDER_REQUEST:
       return { ...state, loading: true };
     case types.GET_SINGLE_CUKCUK_ORDER_SUCCESS:
-      return { ...state, singleOrder: payload, loading: false };
+      return { ...state, singleOrder: [...payload, payload], loading: false };
     case types.GET_SINGLE_CUKCUK_ORDER_FAILURE:
       return { ...state, loading: true };
 

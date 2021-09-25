@@ -10,9 +10,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
-import { productActions } from "redux/actions";
+import { productActions, supplierActions } from "redux/actions";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { Autocomplete } from "@material-ui/lab";
@@ -56,6 +56,7 @@ export default function CreateUpdateIngredient(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const products = listProducts?.map((e) => e);
+  const suppList = useSelector((state) => state.supplier.suppliers.suppliers);
   const [fields, setFields] = useState([
     {
       ingredient: "",
@@ -118,6 +119,10 @@ export default function CreateUpdateIngredient(props) {
 
   const handleChangeType = (event) => {
     setForm({ ...form, type: event.target.value });
+  };
+
+  const handleChangeSupp = (event) => {
+    setForm({ ...form, supplier: event.target.value });
   };
   const handleChange = (e) => {
     e.preventDefault();
@@ -206,6 +211,7 @@ export default function CreateUpdateIngredient(props) {
     if (!singleProduct && form.type && form.type === "Ingredient") {
       setForm({ ...form, unit: "" });
     }
+    dispatch(supplierActions.getSuppliers());
   }, [dispatch, form.type, singleProduct]);
   return (
     <Container component="main" maxWidth="sm">
@@ -269,7 +275,29 @@ export default function CreateUpdateIngredient(props) {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <FormControl
+                variant="outlined"
+                className={classes.formControl}
+                fullWidth
+              >
+                <InputLabel id="demo-simple-select-outlined-label">
+                  Supplier
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  value={form.supplier}
+                  onChange={handleChangeSupp}
+                  label="Supplier"
+                  name="supplier"
+                >
+                  {suppList?.map((e) => {
+                    return <MenuItem value={e.name}>{e.name}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+
+              {/* <TextField
                 variant="outlined"
                 required
                 fullWidth
@@ -279,7 +307,7 @@ export default function CreateUpdateIngredient(props) {
                 autoComplete="supplier"
                 onChange={handleChange}
                 value={form.supplier}
-              />
+              /> */}
             </Grid>
             <Grid item xs={12}>
               <TextField

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PopOver(props) {
-  const { handleDelete, id } = props;
+  const { handleDelete, id, role } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -33,6 +33,7 @@ export default function PopOver(props) {
         style={{ backgroundColor: "#FF4D4F", height: "40px", width: "20px" }}
         variant="contained"
         onClick={handleClick}
+        disabled={role !== "Admin"}
       >
         <IconButton aria-label="delete" color="secondary">
           <DeleteOutlineOutlinedIcon style={{ color: "white" }} />

@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ControlBoard = () => {
+export const ControlBoard = ({ role }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [date, setDate] = useState(moment().format("YYYY-MM-DD"));
@@ -69,26 +69,31 @@ export const ControlBoard = () => {
     <React.Fragment>
       <Title>Control Board</Title>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <Button
-            fullWidth
-            variant="outlined"
-            color="primary"
-            onClick={() => handleViewMode("Date")}
-          >
-            Date View
-          </Button>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Button
-            fullWidth
-            variant="outlined"
-            color="primary"
-            onClick={() => handleViewMode("Month")}
-          >
-            Month View
-          </Button>
-        </Grid>
+        {role === "Admin" ? (
+          <>
+            {" "}
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="primary"
+                onClick={() => handleViewMode("Date")}
+              >
+                Date View
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="primary"
+                onClick={() => handleViewMode("Month")}
+              >
+                Month View
+              </Button>
+            </Grid>{" "}
+          </>
+        ) : null}
 
         <Grid item xs={12} md={12} className="control-date">
           <form className={classes.container}>

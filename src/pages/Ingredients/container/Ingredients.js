@@ -143,17 +143,17 @@ export default function Ingredients() {
   let rows = nonMocktailList?.map((product, index) => {
     return createData(
       index,
-      product.name,
-      product.supplier,
-      product.unit,
-      product.capacity,
-      `${vietNamD.format(product.cost)} đ`,
-      `${product.quantity + " " + product.unit}`,
+      product?.name,
+      product?.supplier,
+      product?.unit,
+      product?.capacity,
+      `${vietNamD.format(product?.cost)} đ`,
+      `${product?.quantity + " " + product?.unit}`,
       <div className="actions">
         <Button
           variant="contained"
           style={{ backgroundColor: "#2EC0FF", color: "white" }}
-          onClick={() => handleOpen(product._id)}
+          onClick={() => handleOpen(product?._id)}
         >
           <EditOutlinedIcon style={{ color: "white" }} />
         </Button>
