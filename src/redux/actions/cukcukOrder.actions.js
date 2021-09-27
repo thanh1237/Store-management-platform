@@ -13,7 +13,6 @@ const getCukcukOrders = () => async (dispatch) => {
     });
     dispatch({ type: types.GET_CUKCUK_ORDER_SUCCESS, payload: res.data.Data });
   } catch (error) {
-    toast.error("Get Order List Failed");
     dispatch({ type: types.GET_CUKCUK_ORDER_FAILURE, payload: error });
   }
 };
@@ -31,7 +30,6 @@ const getSingleCukcukOrder = (ids) => async (dispatch) => {
       payload: orderDetails,
     });
   } catch (error) {
-    toast.error("Get Single Order Failed");
     dispatch({ type: types.GET_SINGLE_CUKCUK_ORDER_FAILURE, payload: error });
   }
 };
@@ -49,7 +47,6 @@ const getYesSingleCukcukOrder = (ids) => async (dispatch) => {
       payload: orderDetails,
     });
   } catch (error) {
-    toast.error("Get Single Order Failed");
     dispatch({
       type: types.GET_YES_SINGLE_CUKCUK_ORDER_FAILURE,
       payload: error,
