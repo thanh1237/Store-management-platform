@@ -8,7 +8,7 @@ const AdminLayout = () => {
     <>
       <div>
         <Switch>
-          <Route path="/admin/dashBoard" component={Dashboard} />
+          <Route path="/" component={Dashboard} />
           <Route component={NotFoundPage} />
         </Switch>
       </div>

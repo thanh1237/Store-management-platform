@@ -3,6 +3,11 @@ import api from "../api";
 import cukcukApi from "../api-cukcuk";
 import { toast } from "react-toastify";
 import crypto from "crypto";
+import {
+  productActions,
+  sainVoiceActions,
+  cukcukOrderActions,
+} from "redux/actions";
 
 const loginCukcuk = () => async (dispatch) => {
   dispatch({ type: types.LOGIN_CUKCUK_REQUEST, payload: null });
@@ -25,6 +30,9 @@ const loginCukcuk = () => async (dispatch) => {
       SignatureInfo: hash,
     });
     dispatch({ type: types.LOGIN_CUKCUK_SUCCESS, payload: res.data.Data });
+    await dispatch(sainVoiceActions.getSainVoices());
+    await dispatch(productActions.getProducts());
+    await dispatch(cukcukOrderActions.getCukcukOrders());
   } catch (error) {
     console.log(error);
     dispatch({ type: types.LOGIN_CUKCUK_FAILURE, payload: error });
@@ -39,7 +47,7 @@ const loginRequest =
       const res = await api.post("/auth/login", { email, password });
       dispatch({ type: types.LOGIN_SUCCESS, payload: res.data.data });
       const name = res.data.data.user.name;
-      dispatch(loginCukcuk());
+      await dispatch(loginCukcuk());
       toast.success(`Welcome back ${name}`);
     } catch (error) {
       console.log(error);

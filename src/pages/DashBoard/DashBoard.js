@@ -177,7 +177,7 @@ export default function Dashboard() {
     (state) => state?.product?.products?.products
   );
   const role = useSelector((state) => state.auth.user.role);
-  let cukcukAccessToken;
+  let cukcukAccessToken = localStorage.getItem("cukcukAccessToken");
   const accessToken = localStorage.getItem("accessToken");
 
   const handleMobileMenuClose = () => {
@@ -274,19 +274,11 @@ export default function Dashboard() {
   const prevOrderIdList = prevOrderList?.map((order) => order?.Id);
 
   useEffect(() => {
-    if (!accessToken) {
-      dispatch(authActions.loginCukcuk());
-    } else {
-      if (!cukcukAccessToken) {
-        dispatch(authActions.loginCukcuk());
-        dispatch(sainVoiceActions.getSainVoices());
-        dispatch(productActions.getProducts());
-        dispatch(cukcukOrderActions.getCukcukOrders());
-      } else {
-        dispatch(sainVoiceActions.getSainVoices());
-        dispatch(productActions.getProducts());
-        dispatch(cukcukOrderActions.getCukcukOrders());
-      }
+    if (isAuthenticated && cukcukAccessToken) {
+      //  dispatch(authActions.loginCukcuk());
+      dispatch(sainVoiceActions.getSainVoices());
+      dispatch(productActions.getProducts());
+      dispatch(cukcukOrderActions.getCukcukOrders());
     }
 
     if (todayOrderIdList) {
@@ -295,7 +287,7 @@ export default function Dashboard() {
     if (prevOrderIdList) {
       dispatch(cukcukOrderActions.getYesSingleCukcukOrder(prevOrderIdList));
     }
-  }, [dispatch, controller]);
+  }, [dispatch, controller, cukcukAccessToken, accessToken]);
 
   return (
     <div className={classes.root}>

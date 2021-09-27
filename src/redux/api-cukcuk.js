@@ -1,12 +1,10 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const accessToken = localStorage.getItem("cukcukAccessToken");
 const cukcukApi = axios.create({
   baseURL: process.env.REACT_APP_CUKCUK_API + "/api",
   headers: {
     CompanyCode: "bake",
-    Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
   },
 });
@@ -25,9 +23,9 @@ cukcukApi.interceptors.request.use(
 
 cukcukApi.interceptors.response.use(
   (response) => {
-    if (response.data.data && response.data.data.accessToken) {
+    if (response.data.Data && response.data.Data.AccessToken) {
       cukcukApi.defaults.headers.common["authorization"] =
-        "Bearer " + response.data.data.accessToken;
+        "Bearer " + response.data.Data.AccessToken;
     }
     return response;
   },
