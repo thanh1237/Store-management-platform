@@ -122,6 +122,7 @@ export default function Ingredients() {
     (state) => state?.product?.products?.products
   );
   const singleProduct = useSelector((state) => state.product?.singleProduct);
+  const role = useSelector(state=> state.auth.user.role)
   const [open, setOpen] = React.useState(false);
 
   const nonCocktailList = listProducts?.filter((e) => e.type !== "Cocktail");
@@ -177,7 +178,7 @@ export default function Ingredients() {
             />
           </Fade>
         </Modal>
-        <PopOver handleDelete={deleteProduct} id={product._id} />
+        <PopOver handleDelete={deleteProduct} id={product._id} role={role} />
       </div>
     );
   });
