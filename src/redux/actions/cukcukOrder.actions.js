@@ -1,6 +1,5 @@
 import * as types from "redux/constants/cukcukOrder.constants";
 import cukcukApi from "../api-cukcuk";
-import { toast } from "react-toastify";
 
 const getCukcukOrders = () => async (dispatch) => {
   dispatch({ type: types.GET_CUKCUK_ORDER_REQUEST, payload: null });
