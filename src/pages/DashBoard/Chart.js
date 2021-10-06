@@ -39,7 +39,11 @@ export default function Chart() {
     let elementArray = total.map((element) =>
       moment(element.RefDate).format("L")
     );
-    if (!elementArray.includes(moment(element.RefDate).format("L"))) {
+    elementArray?.sort(function (a, b) {
+      return a < b ? -1 : a > b ? 1 : 0;
+    })
+  
+    if (!elementArray.includes(moment(element.Date).format("L"))) {
       return [
         ...total,
         {
@@ -50,18 +54,23 @@ export default function Chart() {
     } else {
       const index = total.findIndex(
         (e) =>
-          moment(e.RefDate).format("L") === moment(element.RefDate).format("L")
+          moment(e.RefDate).format("L") === moment(element.Date).format("L")
       );
       total[index].TotalAmount += element.TotalAmount;
     }
     return total;
   }, []);
 
+
   const reduceMonthArr = sortDate.reduce((total, element) => {
     let elementArray = total.map((element) =>
       moment(element.RefDate).format("MMM")
     );
-    if (!elementArray.includes(moment(element.RefDate).format("MMM"))) {
+    elementArray?.sort(function (a, b) {
+      return a < b ? -1 : a > b ? 1 : 0;
+    })
+
+    if (!elementArray.includes(moment(element.Date).format("MMM"))) {
       return [
         ...total,
         {
@@ -73,24 +82,29 @@ export default function Chart() {
       const index = total.findIndex(
         (e) =>
           moment(e.RefDate).format("MMM") ===
-          moment(element.RefDate).format("MMM")
+          moment(element.Date).format("MMM")
       );
       total[index].TotalAmount += element.TotalAmount;
     }
     return total;
   }, []);
 
-  const dateData = reduceDateArr?.map((sainVoice) => {
+  
+  const dateData = reduceDateArr?.sort(function (a, b) {
+    return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
+  })?.map((sainVoice) => {
     return createData(
       moment(sainVoice.RefDate).format("DD/MM"),
-      parseInt(vietNamD.format(sainVoice.TotalAmount))
+      sainVoice.TotalAmount
     );
   });
 
-  const monthData = reduceMonthArr?.map((sainVoice) => {
+  const monthData = reduceMonthArr?.sort(function (a, b) {
+    return a.RefDate < b.RefDate ? -1 : a.RefDate > b.RefDate ? 1 : 0;
+  })?.map((sainVoice) => {
     return createData(
       moment(sainVoice.RefDate).format("MMM"),
-      parseInt(vietNamD.format(sainVoice.TotalAmount))
+      sainVoice.TotalAmount
     );
   });
 
