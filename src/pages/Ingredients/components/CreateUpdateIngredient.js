@@ -12,10 +12,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
-import { productActions, supplierActions } from "redux/actions";
+import { productActions } from "redux/actions";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { Autocomplete } from "@material-ui/lab";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 function Copyright() {
   return (
@@ -49,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
+  },
 }));
 
 export default function CreateUpdateIngredient(props) {
@@ -56,6 +61,7 @@ export default function CreateUpdateIngredient(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const products = listProducts?.map((e) => e);
+  const loading = useSelector((state) => state.supplier.loading);
   const suppList = useSelector((state) => state.supplier.suppliers.suppliers);
   const [fields, setFields] = useState([
     {
@@ -211,9 +217,14 @@ export default function CreateUpdateIngredient(props) {
     if (!singleProduct && form.type && form.type === "Ingredient") {
       setForm({ ...form, unit: "" });
     }
-    dispatch(supplierActions.getSuppliers());
   }, [dispatch, form.type, singleProduct]);
-  return (
+
+  return loading ? (
+    <div className={classes.loading}>
+      {" "}
+      <CircularProgress />
+    </div>
+  ) : (
     <Container component="main" maxWidth="sm">
       <CssBaseline />
       <div className={classes.paper}>
